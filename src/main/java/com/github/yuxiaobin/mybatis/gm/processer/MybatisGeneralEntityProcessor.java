@@ -1,27 +1,39 @@
 package com.github.yuxiaobin.mybatis.gm.processer;
 
+import static org.springframework.util.StringUtils.tokenizeToStringArray;
+
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.apache.ibatis.logging.Log;
+import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.StringUtils;
 
 import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
+import com.baomidou.mybatisplus.toolkit.PackageHelper;
 import com.github.yuxiaobin.mybatis.gm.GeneralMapper;
+import com.github.yuxiaobin.mybatis.gm.GeneralSqlSessionFactoryBean;
 import com.github.yuxiaobin.mybatis.gm.mapper.GeneralMapperSqlInjector;
 
 /**
  * @author Kelly Lake(179634696@qq.com)
  */
 public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
+	
+	private static final Log LOGGER = LogFactory.getLog(MybatisGeneralEntityProcessor.class);
 
     private GeneralMapperSqlInjector generalSqlInjector;
 
     private boolean plusInject = false;
+    
+    private String typeAliasesPackage;
     
     public MybatisGeneralEntityProcessor(GeneralMapperSqlInjector generalSqlInjector) {
         this.generalSqlInjector = generalSqlInjector;
@@ -47,7 +59,10 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
             if (bean instanceof MybatisSqlSessionFactoryBean) {
                 injectSql(((MybatisSqlSessionFactoryBean) bean).getObject().getConfiguration());
                 plusInject = true;
-            } else if (bean instanceof SqlSessionFactoryBean && !plusInject) {
+            }else if (bean instanceof SqlSessionFactoryBean && !plusInject) {
+            	if(bean instanceof GeneralSqlSessionFactoryBean){
+            		this.typeAliasesPackage = ((GeneralSqlSessionFactoryBean)bean).getTypeAliasesPackage();
+            	}
                 injectSql(((SqlSessionFactoryBean) bean).getObject().getConfiguration());
                 plusInject = true;
             } else if(bean instanceof SqlSessionFactory && !plusInject){
@@ -62,13 +77,32 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
 
     /**
      *
-     * @param configuration sqlsessionfactoryBean config
+     * @param SqlSessionFactory sqlsessionfactoryBean
      */
     private void injectSql(Configuration configuration) {
+		if(StringUtils.hasLength(typeAliasesPackage) && typeAliasesPackage.contains("*")){
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("injectSql(): typeAliasesPackage="+typeAliasesPackage);
+			}
+			String[] typeAliasPackageArray = null;
+			if (typeAliasesPackage.contains("*")) {
+				typeAliasPackageArray = PackageHelper.convertTypeAliasesPackage(typeAliasesPackage);
+			} else {
+				typeAliasPackageArray = tokenizeToStringArray(typeAliasesPackage,
+						ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+			}
+			for (String packageToScan : typeAliasPackageArray) {
+				configuration.getTypeAliasRegistry().registerAliases(packageToScan, Object.class );
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Scanned package: '" + packageToScan + "' for aliases");
+				}
+			}
+		}
+    	
         for (Map.Entry<String, Class<?>> type : configuration.getTypeAliasRegistry().getTypeAliases().entrySet()) {
         	if(checkValidateClassTypes(type.getValue())){
 	            MapperBuilderAssistant assistant = new MapperBuilderAssistant(configuration, type.getValue().getPackage().getName());
-	            assistant.setCurrentNamespace(GeneralMapper.class.getName().concat(".").concat(type.getValue().getSimpleName()));
+	            assistant.setCurrentNamespace(generateNamespace(type.getValue()));
 	            generalSqlInjector.inject(configuration, assistant, GeneralMapper.class, type.getValue(), null);
         	}
         }
@@ -82,6 +116,11 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
     			&& checkBeanType(entityClazz)
     			;
     }
+    
+    public static String generateNamespace(Class<?> entityClazz){
+    	return GeneralMapper.class.getSimpleName().concat(".").concat(entityClazz.getName());
+    }
+    
     /**
      * Preprocess for class filtering.
      * 

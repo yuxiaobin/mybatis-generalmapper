@@ -1,3 +1,18 @@
+/**
+ * Copyright (c) 2016-2017, Kelly Lake (179634696@qq.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.github.yuxiaobin.mybatis.gm;
 
 import java.util.HashMap;
@@ -12,6 +27,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
+import com.github.yuxiaobin.mybatis.gm.processer.MybatisGeneralEntityProcessor;
 
 /**
  * @author Kelly Lake(179634696@qq.com)
@@ -360,28 +376,29 @@ public class GeneralMapper {
 	}
 
 	private String getSqlStatement(String statement, Class<?> clazz) {
-		return GeneralMapper.class.getName().concat("." + getCorrectEntityClassName(clazz) + "." + statement);
+		return MybatisGeneralEntityProcessor.generateNamespace(getCorrespondingEntityClass(clazz)) + "." + statement;
 	}
 
 	/**
 	 * 开放接口供子类实现特殊逻辑
 	 * （比如entityWrapper里面的实体其实是VO extends Entity.
-	 * 		复写该方法实现获取Entity.simpleName) 
+	 * 		复写该方法实现获取Entity.class) 
 	 * This method to allow subtypes to implement
-	 * special logic: like use entityVO extends Entity for query _ get correct
-	 * Entity class and return simpleName
+	 * special logic: like use entityVO extends Entity for query _ get correct Entity class 
 	 * 
 	 * 获取子类，可以通过(How to get the correct entity class?) Use
 	 * org.reflections.Reflections： 确保entity 和VO都在这个package下(make sure the package includes entity and entityVO);
 	 * Reflections reflections = new Reflections("com.xx"); - 获取所有子类的class; 
 	 * Set&lt;?&gt; subClazzs = reflections.getSubTypesOf(entityClazz);
 	 * 
+	 * @Deprecated refer to getCorrespondingEntityClass();
+	 * 
 	 * @author 179634696@qq.com
 	 * @param clazz
 	 * @return
 	 */
-	protected String getCorrectEntityClassName(Class<?> clazz) {
-		return clazz.getSimpleName();
+	protected Class<?> getCorrespondingEntityClass(Class<?> clazz){
+		return clazz;
 	}
 
 }

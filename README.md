@@ -4,14 +4,18 @@
 
 What you need is: 
 * create an entity with annotation: @TableId(Required), @TableName(Optional, required if entityName not eq tableName, eg: No need:TblUser - tbl\_user; Required: User - tbl\_user) ,
-* then configure typeAliasesPackage to make the entity be scanned by mybatis,
+* then configure typeAliasesPackage to make the entity be scanned by mybatis(v_1.1 add support for `com.github.yuxiaobin.*.persistent`),
 * import GeneralMapper, invoke CRUD method with the entity.
 
 你只需要做：
 * 创建创建实体带有@TableId(必须), @TableName(可以有,如果表名和实体类名不相同则需要，如果满足驼峰命名相同，可以不用)
-* 配置typeAliasesPackage 可以扫描到该实体
+* 配置typeAliasesPackage 可以扫描到该实体(v_1.1支持通配符扫描实体,`com.github.yuxiaobin.*.persistent`)
 * 引入GeneralMapper, 就可以调用CRUD
 
 ##Mybatis-plus部分
 具体使用，可参考[github上wiki](http://git.oschina.net/juapk/mybatis-plus)， 生成代码参考MybatisPlusGenerator.java
+
+#Release History
+* v_1.0: init
+* v_1.1: Add support typeAliasesPackage contains *
 
