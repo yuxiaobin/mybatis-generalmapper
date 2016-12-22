@@ -84,21 +84,16 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("injectSql(): typeAliasesPackage="+typeAliasesPackage);
 			}
-			String[] typeAliasPackageArray = null;
-			if (typeAliasesPackage.contains("*")) {
-				typeAliasPackageArray = PackageHelper.convertTypeAliasesPackage(typeAliasesPackage);
-			} else {
-				typeAliasPackageArray = tokenizeToStringArray(typeAliasesPackage,
-						ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
-			}
-			for (String packageToScan : typeAliasPackageArray) {
-				configuration.getTypeAliasRegistry().registerAliases(packageToScan, Object.class );
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Scanned package: '" + packageToScan + "' for aliases");
+			String[] typeAliasPackageArray = parseTypeAliasPackage(this.typeAliasesPackage);
+			if(typeAliasPackageArray!=null){
+				for (String packageToScan : typeAliasPackageArray) {
+					configuration.getTypeAliasRegistry().registerAliases(packageToScan, Object.class );
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Scanned package: '" + packageToScan + "' for aliases");
+					}
 				}
 			}
 		}
-    	
         for (Map.Entry<String, Class<?>> type : configuration.getTypeAliasRegistry().getTypeAliases().entrySet()) {
         	if(checkValidateClassTypes(type.getValue())){
 	            MapperBuilderAssistant assistant = new MapperBuilderAssistant(configuration, type.getValue().getPackage().getName());
@@ -106,6 +101,27 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
 	            generalSqlInjector.inject(configuration, assistant, GeneralMapper.class, type.getValue(), null);
         	}
         }
+    }
+    
+    /**
+     * Allow to define the parse strategy for package scan.
+     * 
+     * for package like "com.github.yuxiaobin.*.persistent", 
+     * can be parsed as ["com.github.yuxiaobin.auth.persistent", "com.github.yuxiaobin.buz.persistent",...]
+     * 
+     * @since 1.2
+     * @param typeAliasesPackage
+     * @return
+     */
+    protected String[] parseTypeAliasPackage(String typeAliasesPackage){
+    	String[] typeAliasPackageArray = null;
+		if (typeAliasesPackage.contains("*")) {
+			typeAliasPackageArray = PackageHelper.convertTypeAliasesPackage(typeAliasesPackage);
+		} else {
+			typeAliasPackageArray = tokenizeToStringArray(typeAliasesPackage,
+					ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+		}
+		return typeAliasPackageArray;
     }
 
     private boolean checkValidateClassTypes(Class<?> entityClazz){
