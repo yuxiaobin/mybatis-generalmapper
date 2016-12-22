@@ -391,8 +391,6 @@ public class GeneralMapper {
 	 * Reflections reflections = new Reflections("com.xx"); - 获取所有子类的class; 
 	 * Set&lt;?&gt; subClazzs = reflections.getSubTypesOf(entityClazz);
 	 * 
-	 * @Deprecated refer to getCorrespondingEntityClass();
-	 * 
 	 * @author 179634696@qq.com
 	 * @param clazz
 	 * @return

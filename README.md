@@ -14,6 +14,8 @@ What you need is:
 
 ##Mybatis-plus部分
 具体使用，可参考[github上wiki](http://git.oschina.net/juapk/mybatis-plus)， 生成代码参考MybatisPlusGenerator.java
+* About plus: a middle-ware for mybatis, CRUD operation for single table, no need to configure mapper.xml, SQL will auto be injected.
+* Mybatis-generalmapper uses the sql injection by plus(currently use plus v_1.5).
 
 #Release History
 * v_1.0: init
