@@ -2,6 +2,8 @@ package com.github.yuxiaobin.mybatis.gm.processer;
 
 import static org.springframework.util.StringUtils.tokenizeToStringArray;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -113,15 +115,30 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
      * @param typeAliasesPackage
      * @return
      */
-    protected String[] parseTypeAliasPackage(String typeAliasesPackage){
-    	String[] typeAliasPackageArray = null;
-		if (typeAliasesPackage.contains("*")) {
-			typeAliasPackageArray = PackageHelper.convertTypeAliasesPackage(typeAliasesPackage);
-		} else {
-			typeAliasPackageArray = tokenizeToStringArray(typeAliasesPackage,
-					ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
-		}
-		return typeAliasPackageArray;
+    public static String[] parseTypeAliasPackage(String typeAliasesPackage){
+    	String[] typeAliasPackageArray = tokenizeToStringArray(typeAliasesPackage,
+				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+    	List<String> packageList = new ArrayList<>();
+    	for(String pkg : typeAliasPackageArray){
+    		if(pkg.contains("*")) {
+    			String[] subPackages = PackageHelper.convertTypeAliasesPackage(pkg);
+    			for(String s:subPackages){
+    				if(!packageList.contains(s)){
+    					packageList.add(s);
+    				}
+    			}
+    		}else{
+    			if(!packageList.contains(pkg)){
+					packageList.add(pkg);
+				}
+    		}
+    	}
+    	int size = packageList.size();
+    	String[] array = new String[size];
+    	for(int i=0;i<size;++i){
+    		array[i] = packageList.get(i);
+    	}
+		return array;
     }
 
     private boolean checkValidateClassTypes(Class<?> entityClazz){
