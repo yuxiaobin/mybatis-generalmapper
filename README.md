@@ -19,5 +19,6 @@ What you need is:
 
 #Release History
 * v_1.0: init
-* v_1.1: Add support typeAliasesPackage contains *: com.github.yuxiaobin.*.persistent;com.your.company.persistent
+* v_1.1: Add support typeAliasesPackage contains *: com.github.yuxiaobin.*.persistent
+* v_1.2: Add support typeAliasesPackage contains ;,\t\n: com.github.yuxiaobin.*.persistent;com.your.company.persistent
 

@@ -135,9 +135,7 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
     	}
     	int size = packageList.size();
     	String[] array = new String[size];
-    	for(int i=0;i<size;++i){
-    		array[i] = packageList.get(i);
-    	}
+    	packageList.toArray(array);
 		return array;
     }
 
