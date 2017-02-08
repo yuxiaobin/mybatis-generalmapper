@@ -27,6 +27,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
+import com.github.yuxiaobin.mybatis.gm.mapper.GeneralMapperSqlInjector.ExtraSqlMethod;
 import com.github.yuxiaobin.mybatis.gm.processer.MybatisGeneralEntityProcessor;
 
 /**
@@ -117,6 +118,21 @@ public class GeneralMapper {
 	 */
 	public int deleteById(Object id, Class<?> clazz) {
 		return sqlSessionTemplate.delete(getSqlStatement(SqlMethod.DELETE_BY_ID.getMethod(), clazz), id);
+	}
+	/**
+	 * <p>
+	 * 根据EntityWrapper条件删除记录
+	 * </p>
+	 *
+	 * @param entityWrapper
+	 *            条件封装(必须setEntity)
+	 * @return int
+	 * 
+	 * @since 1.4
+	 */
+	public int deleteByEW(EntityWrapper<?> entityWrapper) {
+		return sqlSessionTemplate.delete(getSqlStatement(ExtraSqlMethod.DELETE_BY_EW.getMethod(), entityWrapper.getEntity().getClass()),
+				asParam("ew", entityWrapper));
 	}
 
 	/**

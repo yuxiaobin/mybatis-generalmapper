@@ -1,8 +1,10 @@
 package com.github.yuxiaobin.mybatis.gm.mapper;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.ibatis.builder.MapperBuilderAssistant;
+import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
 import com.baomidou.mybatisplus.MybatisConfiguration;
@@ -48,6 +50,7 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
             this.injectDeleteByMapSql(mapperClass, table);
             this.injectDeleteSql(false, mapperClass, modelClass, table);
             this.injectDeleteSql(true, mapperClass, modelClass, table);
+            this.injectDeleteByEWSql(mapperClass, modelClass,  table);
             /* 修改  Update SQL*/
             this.injectUpdateByIdSql(false, mapperClass, modelClass, table);
             this.injectUpdateByIdSql(true, mapperClass, modelClass, table);
@@ -67,5 +70,47 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
             logger.warning(String.format("%s ,Not found @TableId annotation, cannot use mybatis-plus curd method.",
 					modelClass.toString()));
         }
+    }
+    
+    /**
+     * 删除满足条件的记录
+     * 
+     * 条件：EntityWrapper
+     * 
+     * @param mapperClass
+     * @param table
+     */
+    protected void injectDeleteByEWSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
+    	ExtraSqlMethod sqlMethod = ExtraSqlMethod.DELETE_BY_EW;
+		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhereEntityWrapper(table));
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, Map.class);
+		this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
+	}
+    
+    public static enum ExtraSqlMethod{
+    	
+    	DELETE_BY_EW("deleteByEw", "删除满足条件的记录", "<script>DELETE FROM %s %s</script>");
+    	
+    	private final String method;
+    	
+    	private final String desc;
+
+    	private final String sql;
+
+    	ExtraSqlMethod( final String method, final String desc, final String sql ) {
+    		this.method = method;
+    		this.desc = desc;
+    		this.sql = sql;
+    	}
+		public String getMethod() {
+			return method;
+		}
+		public String getDesc() {
+			return desc;
+		}
+		public String getSql() {
+			return sql;
+		}
+    	
     }
 }
