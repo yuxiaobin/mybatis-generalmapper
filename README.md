@@ -21,4 +21,48 @@ What you need is:
 * v_1.0: init
 * v_1.1: Add support typeAliasesPackage contains *: com.github.yuxiaobin.*.persistent
 * v_1.2: Add support typeAliasesPackage contains ;,\t\n: com.github.yuxiaobin.*.persistent;com.your.company.persistent
+* v_1.3: Add support typeAliasesPackage contains multiple *: com.projecta.*.persistent;com.projectb.*.persistent;com.projectc.*.persistent
+* v_1.4: Add deleteByEW(EntityWrapper);
 
+#Roadmap
+* support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'
+
+#NOTE
+not released to maven central repository(v_1.2 released) due to publish key missing... 
+
+#Some Sample Code for Spring Boot
+	
+	@MapperScan("com.*.*.mapper")//use this path to scan *Mapper.xml
+	MybatisConfig{
+		@Bean
+		public SqlSessionFactoryBean sqlSessionFactory (DataSource dataSource){
+			SqlSessionFactoryBean sqlSessionFactory = new GeneralSqlSessionFactoryBean();
+			sqlSessionFactory.setDataSource(dataSource);
+			sqlSessionFactory.setVfs(SpringBootVFS.class);
+			sqlSessionFactory.setTypeAliasesPackage("com.*.*.persistent");
+			MybatisConfiguration configuration = new MybatisConfiguration();
+			configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
+			sqlSessionFactory.setConfiguration(configuration);
+			return sqlSessionFactory;
+		}
+		@Bean
+		public GeneralMapper generalMapper(SqlSessionFactoryBean sqlSessionFactory){
+			GeneralMapper generalMapper = new RsGeneralMapper();
+			generalMapper.setSqlSessionFactoryBean(sqlSessionFactory);
+			return generalMapper;
+		}
+	}
+	
+	Service:
+		@Autowired
+		GeneralMapper generalMapper;//use spring framework
+		
+		SampleTO sample= new Sample();
+		sample.setName("123");//add condition: sample_name='123'
+		EntityWrapper<SampleTO> ew = new EntityWrapper<>(sample);
+		ew.where("sample_age>{0}",18);// add condition: sample_age>18 //will support use property name in future
+		ew.and(" sample_dt > {0} and sample_dt < {1} ", LocalDate.of(2015, 12, 12).toString(), LocalDate.of(2016, 1, 1).toString());
+		ew.like("sample_nkname", "a");
+		List<SampleTO> list =generalMapper.selectList(ew);
+	/**********SQL:*********/
+	//select * from tbl_sample where sample_name='123' and sample_age>18 and (sample_dt>'2015-12-12' and sample_dt<'2016-1-1') and sample_nkname like '%a%'
