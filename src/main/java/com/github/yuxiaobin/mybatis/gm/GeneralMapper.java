@@ -15,12 +15,14 @@
  */
 package com.github.yuxiaobin.mybatis.gm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Import;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -272,7 +274,8 @@ public class GeneralMapper {
 	 * @return T
 	 */
 	public <T> T selectById(Object id, Class<T> clazz) {
-		return sqlSessionTemplate.selectOne(getSqlStatement(SqlMethod.SELECT_BY_ID.getMethod(), clazz), id);
+		T result = sqlSessionTemplate.selectOne(getSqlStatement(SqlMethod.SELECT_BY_ID.getMethod(), clazz), id);
+		return wrapResult(result, clazz);
 	}
 
 	;
@@ -289,7 +292,8 @@ public class GeneralMapper {
 	 * @return List
 	 */
 	public <T> List<T> selectBatchIds(List<?> idList, Class<T> clazz) {
-		return sqlSessionTemplate.selectList(getSqlStatement(SqlMethod.SELECT_BATCH.getMethod(), clazz), idList);
+		List<T> list = sqlSessionTemplate.selectList(getSqlStatement(SqlMethod.SELECT_BATCH.getMethod(), clazz), idList);
+		return wrapResult(list, clazz);
 	}
 
 	/**
@@ -304,8 +308,9 @@ public class GeneralMapper {
 	 * @return List
 	 */
 	public <T> List<T> selectByMap(Map<String, Object> columnMap, Class<T> clazz) {
-		return sqlSessionTemplate.selectList(getSqlStatement(SqlMethod.SELECT_BY_MAP.getMethod(), clazz),
+		List<T> list = sqlSessionTemplate.selectList(getSqlStatement(SqlMethod.SELECT_BY_MAP.getMethod(), clazz),
 				asParam("cm", columnMap));
+		return wrapResult(list, clazz);
 	}
 
 	/**
@@ -318,8 +323,9 @@ public class GeneralMapper {
 	 * @return object
 	 */
 	public <T> T selectOne(T entity) {
-		return sqlSessionTemplate.selectOne(getSqlStatement(SqlMethod.SELECT_ONE.getMethod(), entity.getClass()),
+		T result = sqlSessionTemplate.selectOne(getSqlStatement(SqlMethod.SELECT_ONE.getMethod(), entity.getClass()),
 				asParam("ew", entity));
+		return wrapResult(result, entity.getClass());
 	}
 
 	/**
@@ -360,9 +366,10 @@ public class GeneralMapper {
 	 * @return List
 	 */
 	public <T> List<T> selectList(EntityWrapper<T> entityWrapper) {
-		return sqlSessionTemplate.selectList(
+		List<T> list = sqlSessionTemplate.selectList(
 				getSqlStatement(SqlMethod.SELECT_LIST.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper));
+		return wrapResult(list, entityWrapper);
 	}
 
 	/**
@@ -377,9 +384,10 @@ public class GeneralMapper {
 	 * @return List
 	 */
 	public <T> List<T> selectPage(Pagination page, EntityWrapper<T> entityWrapper) {
-		return sqlSessionTemplate.selectList(
+		List<T> list = sqlSessionTemplate.selectList(
 				getSqlStatement(SqlMethod.SELECT_PAGE.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper), page);
+		return wrapResult(list, entityWrapper);
 	}
 
 	@SuppressWarnings("serial")
@@ -415,4 +423,62 @@ public class GeneralMapper {
 		return clazz;
 	}
 
+	/**
+	 * Convert EntityList to Entity Sub-class List.
+	 * 
+	 * @param list	EntityList
+	 * @param entityClazz	EntityClass or Sub-class
+	 * @return
+	 */
+	protected <T> List<T> wrapResult(List<T> list, Class<?> entityClazz){
+		Class<?> realEntityClazz = getCorrespondingEntityClass(entityClazz);
+		if (!entityClazz.equals(realEntityClazz)) {
+			List<T> realList = new ArrayList<>(list.size());
+			try {
+				for (int i = 0; i < list.size(); ++i) {//actual object is Entity
+					@SuppressWarnings("unchecked")
+					T record = (T) entityClazz.newInstance();
+					BeanUtils.copyProperties(list.get(i), record);//Convert Entity to EntityVO
+					realList.add(record);
+				}
+				return realList;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			} 
+		}
+		return list;
+	}
+	/**
+	 * 如果用EntityVO extends Entity查询，把EntityList 包装成  EntityVOList
+	 * 
+	 * @param entityWrapper entityWrapper
+	 * @param list EntityList
+	 * @return
+	 */
+	protected <T> List<T> wrapResult(List<T> list, EntityWrapper<T> entityWrapper) {
+		return wrapResult(list, entityWrapper.getEntity().getClass());
+	}
+	
+	/**
+	 * Convert Entity Result to Entity Sub-class if needed. 
+	 * 
+	 * @param result	Entity Object
+	 * @param entityClazz Entity Class or sub-class
+	 * @return
+	 */
+	protected <T> T wrapResult(T result, Class<?> entityClazz){
+		Class<?> realEntityClazz = getCorrespondingEntityClass(entityClazz);
+		if (!entityClazz.equals(realEntityClazz)) {
+			try {
+				@SuppressWarnings("unchecked")
+				T record = (T) entityClazz.newInstance();
+				BeanUtils.copyProperties(result, record);
+				return record;
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			} 
+		}
+		return result;
+	}
+	
 }
