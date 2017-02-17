@@ -21,26 +21,26 @@ import com.github.yuxiaobin.mybatis.gm.plus.GeneralEntitySubTypesHolder;
 /**
  * 
  * <p>
- * This object is used to solve EntityWrapper.where/and/or... Parameter Type of Date. Mybatis-plus_v_1.5
- * </br>
- * </br>
- * Eg:</br>
- * 		EntityWrapper ew = new EntityWrapper(entity);</br>
- * 		ew.andNew("col1_date > {0} and col1_date<{1}", LocalDate.of(2017,2,10), LocalDate.of(2017,2,15));</br>
- * </br>
- * SQL:</br>
- * 		select xx from tbl_entity where col1_date>2017-2-10 and col1_date<2017-2-15</br>
- * </br>
- * Question:</br>
- * 		1) Mysql: no record will be found due to condition is false forever.(actual sql: col1_date>2005 and col1_date<2000) : <b>do subtraction</b></br>
- * 		2) Other db(oracle), sql will encounter error</br>
- * </br>
- * Solution:</br>
- * 		1) just use: ew.andNew("col1_date > {0} and col1_date<{1}", LocalDate.of(2017,2,10), LocalDate.of(2017,2,15));</br>
- * 			sqlSegment will be replaced to : col1_date > #{GENVAL1} and col1_date<#{GENVAL2}, </br>
- * 			And GENVAL1,GENVAL2 will be passed to mybatis via Map.</br>
- * 		2) OR try like this: ew.andNew("col1_date > #{dateFrom} and col1_date<#{dateTo}", LocalDate.of(2017,2,10), LocalDate.of(2017,2,15));</br>
- * 		3) <b>BUT</b> {0} & #{value}, mixed use currently <b>NOT</b> supported.
+ * This object is used to solve EntityWrapper.where/and/or... Parameter Type of Date. Mybatis-plus_v_1.5<BR>
+ * <BR>
+ * <BR>
+ * Eg:<BR>
+ * 		EntityWrapper ew = new EntityWrapper(entity);<BR>
+ * 		ew.andNew("col1_date &gt; {0} and col1_date&lt;{1}", LocalDate.of(2017,2,10), LocalDate.of(2017,2,15));<BR>
+ * <BR>
+ * SQL:<BR>
+ * 		select xx from tbl_entity where col1_date&gt;2017-2-10 and col1_date&lt;2017-2-15<BR>
+ * <BR>
+ * Question:<BR>
+ * 		1) Mysql: no record will be found due to condition is false forever.(actual sql: col1_date&gt;2005 and col1_date&lt;2000) : do subtraction<BR>
+ * 		2) Other db(oracle), sql will encounter error<BR>
+ * <BR>
+ * Solution:<BR>
+ * 		1) just use: ew.andNew("col1_date &gt; {0} and col1_date&lt;{1}", LocalDate.of(2017,2,10), LocalDate.of(2017,2,15));<BR>
+ * 			sqlSegment will be replaced to : col1_date &gt; #{GENVAL1} and col1_date&lt;#{GENVAL2}, <BR>
+ * 			And GENVAL1,GENVAL2 will be passed to mybatis via Map.<BR>
+ * 		2) OR try like this: ew.andNew("col1_date &gt; #{dateFrom} and col1_date&lt;#{dateTo}", LocalDate.of(2017,2,10), LocalDate.of(2017,2,15));<BR>
+ * 		3) BUT {0} and #{value}, mixed use currently NOT supported.<BR>
  * </p>
  * 
  * 
@@ -48,7 +48,6 @@ import com.github.yuxiaobin.mybatis.gm.plus.GeneralEntitySubTypesHolder;
  * 
  * @author Kelly Lake(179634696@qq.com)
  *
- * @param <T>
  */
 public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	
@@ -64,14 +63,14 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Plus Injected Sql will use EntityWrapper.sqlSegment in sql script</br>
-	 * </br>
-	 * Refer to {@code AutoSqlInjector.sqlWhereEntityWrapper()}</br>
-	 * </br>
-	 * If ew.entity is an empty object, sql structure:</br>
-	 * select col1, col2 from tbl_entity #{sqlSegment}, sqlSegment should start with "WHERE";</br>
-	 * If ew.entity has property values, sql structure:</br>
-	 * select col1, col2 from tbl_entity where col1=#{propertyVal1} #{sqlSegment}, sqlSegment should start with "AND"</br>
+	 * Plus Injected Sql will use EntityWrapper.sqlSegment in sql script<BR>
+	 * <BR>
+	 * Refer to {@code AutoSqlInjector.sqlWhereEntityWrapper()}<BR>
+	 * <BR>
+	 * If ew.entity is an empty object, sql structure:<BR>
+	 * select col1, col2 from tbl_entity #{sqlSegment}, sqlSegment should start with "WHERE";<BR>
+	 * If ew.entity has property values, sql structure:<BR>
+	 * select col1, col2 from tbl_entity where col1=#{propertyVal1} #{sqlSegment}, sqlSegment should start with "AND"<BR>
 	 * 
 	 * @since 1.6
 	 */
@@ -116,20 +115,20 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * Format SQL for methods: EntityWrapper.where/and/or...("name={0}", value);</br>
-	 * </br>
-	 * ew.where("sample_name={0}", "haha").and("sample_age >{0} and sample_age<{1}", 18, 30);</br>
-	 * OR</br>
-	 * ew.where("sample_name=#{name}", "haha").and("sample_age >#{ageFrom} and sample_age<#{ageTo}", 18, 30);</br>
-	 * BUT</br>
-	 * {0} & #{value} cannot be mixed used.</br>
-	 * eg:</br>
-	 * ew.and("sample_age >{0} and sample_age<#{ageTo}", 18, 30);//not support
-	 * </br>
+	 * Format SQL for methods: EntityWrapper.where/and/or...("name={0}", value);<BR>
+	 * <BR>
+	 * ew.where("sample_name={0}", "haha").and("sample_age &gt;{0} and sample_age&lt;{1}", 18, 30);<BR>
+	 * OR<BR>
+	 * ew.where("sample_name=#{name}", "haha").and("sample_age &gt;#{ageFrom} and sample_age&lt;#{ageTo}", 18, 30);<BR>
+	 * BUT<BR>
+	 * {0} and #{value} cannot be mixed used.<BR>
+	 * eg:<BR>
+	 * ew.and("sample_age &gt;{0} and sample_age&lt;#{ageTo}", 18, 30);//not support<BR>
+	 * 
 	 * 
 	 * @param need true
 	 * @param sqlStr normally like: "column_name={0}"
-	 * @param parms param values
+	 * @param params
 	 * 
 	 * @since 1.6
 	 */
@@ -173,23 +172,23 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * ew.where("col_1>{0} and col_1<{1}", Object val1, Object val2);
-	 * </br>
-	 * </br>
-	 * eg:</br> 
-	 * ew.where("name='Bob'").where("id=#{value1}",123).where("age>#{value2}", 18);</br> 
-	 * OR </br>
-	 * ew.where("name='Bob'").where("id={0}",123).where("age>{1}", 18);</br> 
-	 * sql:</br>
-	 * where (name='Bob' and id=#{value1} and age>#{value2})</br>
-	 * The values of "value1"&"value2" will be passed to mybatis via Map param.</br>
-	 *</br>
-	 *<b>
-	 * NOTE: NOT support mixed usage for {0} & #{value1}.</br>
-	 *</b>
-	 *ew.where("id=<b>{0}</b>",123).where("age><b>#{age}</b>", 18) currently <b>NOT SUPPORT</b>.
+	 * ew.where("col_1&gt;{0} and col_1&lt;{1}", Object val1, Object val2);<BR>
+	 * <BR>
+	 * <BR>
+	 * eg: <BR>
+	 * ew.where("name='Bob'").where("id=#{value1}",123).where("age&gt;#{value2}", 18); <BR>
+	 * OR <BR>
+	 * ew.where("name='Bob'").where("id={0}",123).where("age&gt;{1}", 18); <BR>
+	 * sql:<BR>
+	 * where (name='Bob' and id=#{value1} and age&gt;#{value2})<BR>
+	 * The values of "value1" and "value2" will be passed to mybatis via Map param.<BR>
+	 *<BR>
+	 *<BR>
+	 * NOTE: NOT support mixed usage for {0} and #{value1}.<BR>
+	 *<BR>
+	 *ew.where("id={0}",123).where("age&gt;#{age}", 18) currently NOT SUPPORT.<BR>
 	 * 
-	 * @param sqlWhere sql segment: "col_1>{0} AND col_1<{1}" or "col_1>#{val1} AND col_1<#{val2}"
+	 * @param sqlWhere sql segment: "col_1&gt;{0} AND col_1&lt;{1}" or "col_1&gt;#{val1} AND col_1&lt;#{val2}"
 	 * @param params 
 	 * @since 1.6 just show how to deal
 	 */
@@ -199,10 +198,10 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * Code:</br>
-	 * ew.and("col1=18").and("col2={0}", 20)</br>
-	 * SQL:</br>
-	 * AND col1=18 AND col2=20</br>
+	 * Code:<BR>
+	 * ew.and("col1=18").and("col2={0}", 20)<BR>
+	 * SQL:<BR>
+	 * AND col1=18 AND col2=20<BR>
 	 */
 	@Override
 	public EntityWrapper<T> and(String sqlAnd, Object... params) {
@@ -210,12 +209,12 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * Use () to separate sql segment.</br>
-	 * </br>
-	 * Code:</br>
-	 * ew.and("col1=18").andNew("col2>2 or col2<10")</br>
-	 * SQL:</br>
-	 * AND col1=18 AND ( col2>2 or col2<10 )</br>
+	 * Use () to separate sql segment.<BR>
+	 * <BR>
+	 * Code:<BR>
+	 * ew.and("col1=18").andNew("col2&gt;2 or col2&lt;10")<BR>
+	 * SQL:<BR>
+	 * AND col1=18 AND ( col2&gt;2 or col2&lt;10 )<BR>
 	 */
 	@Override
 	public EntityWrapper<T> andNew(String sqlAnd, Object... params) {
@@ -223,10 +222,10 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * Code:</br>
-	 * ew.or("col1=18").or("col2={0}", 20)</br>
-	 * SQL:</br>
-	 * OR col1=18 OR col2=20</br>
+	 * Code:<BR>
+	 * ew.or("col1=18").or("col2={0}", 20)<BR>
+	 * SQL:<BR>
+	 * OR col1=18 OR col2=20<BR>
 	 */
 	@Override
 	public EntityWrapper<T> or(String sqlOr, Object... params) {
@@ -234,10 +233,10 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * Code:</br>
-	 * ew.or("col1=18").orNew("col2={0} and col3={0}", 20)</br>
-	 * SQL:</br>
-	 * OR col1=18 OR ( col2=20 and col3=20 )</br>
+	 * Code:<BR>
+	 * ew.or("col1=18").orNew("col2={0} and col3={0}", 20)<BR>
+	 * SQL:<BR>
+	 * OR col1=18 OR ( col2=20 and col3=20 )<BR>
 	 */
 	@Override
 	public EntityWrapper<T> orNew(String sqlOr, Object... params) {
@@ -245,10 +244,10 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	}
 
 	/**
-	 * Code:</br>
-	 * eg: ew.groupBy("id,name").having("id={0}",22).and("password is not null")</br>
-	 * SQL:</br>
-	 * group by id, name having id=22 and password is not null</br>
+	 * Code:<BR>
+	 * eg: ew.groupBy("id,name").having("id={0}",22).and("password is not null")<BR>
+	 * SQL:<BR>
+	 * group by id, name having id=22 and password is not null<BR>
 	 */
 	@Override
 	public EntityWrapper<T> having(String sqlHaving, Object... params) {
