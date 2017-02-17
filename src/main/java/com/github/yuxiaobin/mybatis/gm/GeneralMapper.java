@@ -390,13 +390,22 @@ public class GeneralMapper {
 		return wrapResult(list, entityWrapper);
 	}
 
-	@SuppressWarnings("serial")
+	/**
+	 * Put GeneralEntityWrapper.paramNameValuePairs to paramMap if {@code obj} is GeneralEntityWrapper.
+	 * 
+	 * @since 1.6
+	 * @param paramName
+	 * @param obj
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Map<String, Object> asParam(final String paramName, final Object obj) {
-		return new HashMap<String, Object>() {
-			{
-				put(paramName, obj);
-			}
-		};
+		Map<String,Object> params = new HashMap<>(4);
+		params.put(paramName, obj);
+		if(obj instanceof GeneralEntityWrapper){
+			params.putAll(((GeneralEntityWrapper) obj).getParamNameValuePairs());
+		}
+		return params;
 	}
 
 	private String getSqlStatement(String statement, Class<?> clazz) {

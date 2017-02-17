@@ -23,12 +23,15 @@ What you need is:
 * v_1.2: Add support typeAliasesPackage contains ;,\t\n: com.github.yuxiaobin.*.persistent;com.your.company.persistent
 * v_1.3: Add support typeAliasesPackage contains multiple *: com.projecta.*.persistent;com.projectb.*.persistent;com.projectc.*.persistent
 * v_1.4: Add deleteByEW(EntityWrapper);
+* v_1.5: Wrap result : use ew.entity.type, to solve returned parent class object;
+* v_1.6: Add GeneralEntityWrapper: to solve such as ew.and("col_dt={0}", Date val) sqlSegment issue.
 
 #Roadmap
 * support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'
 
 #NOTE
-not released to maven central repository(v_1.2 released) due to publish key missing... 
+not released to maven central repository(v_1.2 released) due to publish key missing... (download the source code and install to your local repository:)
+
 
 #Some Sample Code for Spring Boot
 	
