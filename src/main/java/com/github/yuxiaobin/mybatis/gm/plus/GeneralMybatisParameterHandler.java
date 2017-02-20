@@ -21,6 +21,10 @@ import com.baomidou.mybatisplus.toolkit.TableInfo;
 import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
 
 /**
+ * <p>
+ * This Class is used to populate Primary Key for INSERT method for {@code IdType.UUID} /{@code IdType.ID_WORKER}.
+ * </p>
+ * 
  * 
  * @author yuxiaobin
  *
@@ -40,7 +44,11 @@ public class GeneralMybatisParameterHandler extends DefaultParameterHandler {
 			if (null != parameters) {
 				List<Object> objList = new ArrayList<Object>();
 				for (Object parameter : parameters) {
-					TableInfo tableInfo = TableInfoHelper.getTableInfo(parameter.getClass());
+					Class<?> entityClazz = GeneralEntitySubTypesHolder.get(parameter.getClass());
+					if(entityClazz==null){
+						entityClazz = parameter.getClass();
+					}
+					TableInfo tableInfo = TableInfoHelper.getTableInfo(entityClazz);
 					if (null != tableInfo) {
 						objList.add(populateKeys(tableInfo, ms, parameter));
 					} else {
@@ -52,6 +60,9 @@ public class GeneralMybatisParameterHandler extends DefaultParameterHandler {
 				}
 				return objList;
 			} else {
+				/**
+				 * To resolve insert entityVO > pk NOT auto filled issue
+				 */
 				Class<?> entityClazz = GeneralEntitySubTypesHolder.get(parameterObject.getClass());
 				if(entityClazz==null){
 					entityClazz = parameterObject.getClass();
