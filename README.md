@@ -43,7 +43,7 @@ not released to maven central repository(v_1.2 released) due to publish key miss
 
 #Some Sample Code for Spring Boot
 	
-	@MapperScan("com.*.*.mapper")//use this path to scan *Mapper.xml
+	@MapperScan("com.*.*.mapper")//use this path to scan *Mapper.java
 	MybatisConfig{
 		@Bean
 		public SqlSessionFactoryBean sqlSessionFactory (DataSource dataSource){
@@ -54,11 +54,12 @@ not released to maven central repository(v_1.2 released) due to publish key miss
 			MybatisConfiguration configuration = new MybatisConfiguration();
 			configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
 			sqlSessionFactory.setConfiguration(configuration);
+			sqlSessionFactory.setMapperLocations("mybatis\mapper\*.xml");
 			return sqlSessionFactory;
 		}
 		@Bean
 		public GeneralMapper generalMapper(SqlSessionFactoryBean sqlSessionFactory){
-			GeneralMapper generalMapper = new RsGeneralMapper();
+			GeneralMapper generalMapper = new GeneralMapper();
 			generalMapper.setSqlSessionFactoryBean(sqlSessionFactory);
 			return generalMapper;
 		}
