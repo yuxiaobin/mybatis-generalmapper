@@ -17,6 +17,13 @@ What you need is:
 * About plus: a middle-ware for mybatis, CRUD operation for single table, no need to configure mapper.xml, SQL will auto be injected.
 * Mybatis-generalmapper uses the sql injection by plus(currently use plus v_1.5).
 
+#Maven
+	<dependency>
+			<groupId>com.github.yuxiaobin</groupId>
+			<artifactId>mybatis-generalmapper</artifactId>
+			<version>1.7</version>
+		</dependency>
+
 #Release History
 * v_1.0: init
 * v_1.1: Add support typeAliasesPackage contains *: com.github.yuxiaobin.*.persistent
