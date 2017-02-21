@@ -37,9 +37,6 @@ What you need is:
 #Roadmap
 * support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'
 
-#NOTE
-not released to maven central repository(v_1.2 released) due to publish key missing... (download the source code and install to your local repository:)
-
 
 #Some Sample Code for Spring Boot
 	
