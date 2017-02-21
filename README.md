@@ -25,6 +25,7 @@ What you need is:
 * v_1.4: Add deleteByEW(EntityWrapper);
 * v_1.5: Wrap result : use ew.entity.type, to solve returned parent class object;
 * v_1.6: Add GeneralEntityWrapper: to solve such as ew.and("col_dt={0}", Date val) sqlSegment issue.
+* v_1.7: SQL inject bypass classes under java/apache/spring/hibernate; use GeneralEntityWrapper in byEW methods to avoid v_1.6 issue. 
 
 #Roadmap
 * support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'

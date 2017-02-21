@@ -90,7 +90,7 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	 * @since 1.6
 	 * @return
 	 */
-	protected boolean checkFieldValueNotNull(){
+	public boolean checkFieldValueNotNull(){
 		Class<?> realEntityClazz = GeneralEntitySubTypesHolder.get(entity.getClass());
 		TableInfo tableInfo = TableInfoHelper.getTableInfo(realEntityClazz);
 		if (null == tableInfo) {

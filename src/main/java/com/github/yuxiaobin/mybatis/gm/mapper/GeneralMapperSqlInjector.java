@@ -21,10 +21,10 @@ import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
  */
 public class GeneralMapperSqlInjector extends AutoSqlInjector {
 	
-	protected static final Logger logger = Logger.getLogger("GeneralSqlInjector");
+	protected static final Logger logger = Logger.getLogger("GeneralMapperSqlInjector");
 
     /**
-     * 
+     * CRUD sql inject
      */
     @Override
     public void inject(Configuration configuration, MapperBuilderAssistant builderAssistant, Class<?> mapperClass,
@@ -33,9 +33,19 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
         this.builderAssistant = builderAssistant;
         this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
         this.dbType = MybatisConfiguration.DB_TYPE;
+        String modelClassName = modelClass.getName();
+        String pattern = "^org.(apache|spring|hibernate).*";
+        /*
+         * System class/third part class(apache,spring,hibernate), inject ignore
+         * @Since 1.7
+         */
+        if(modelClassName.startsWith("java") || modelClassName.matches(pattern)){
+        	return;
+        }
         table = TableInfoHelper.initTableInfo(modelClass);
         /**
-         * 没有指定主键，默认方法不能使用
+         * 没有指定主键，默认方法不能使用,
+         * 如果是中间表，可以配置一个字段为@TableId，这样除了ById的方法不能用，其他都可以用.
          * PersistentEntity should contains {@code @TableId}, which is the table PK.
          * NOTE: if middle table don't have PK, can set one property {@code @TableId}, 
          * 		then CRUD SQL can also be injected, but **ById() method will not work properly.
@@ -73,9 +83,10 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
     }
     
     /**
-     * 删除满足条件的记录
+     * 删除满足条件的记录<BR>
+     * Delete by EntityWrapper<BR>
      * 
-     * 条件：EntityWrapper
+     * 条件：EntityWrapper<BR>
      * 
      * @param mapperClass
      * @param table

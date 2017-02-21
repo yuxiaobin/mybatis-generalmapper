@@ -25,7 +25,6 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Import;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
@@ -132,7 +131,7 @@ public class GeneralMapper {
 	 * 
 	 * @since 1.4
 	 */
-	public int deleteByEW(EntityWrapper<?> entityWrapper) {
+	public int deleteByEW(GeneralEntityWrapper<?> entityWrapper) {
 		return sqlSessionTemplate.delete(getSqlStatement(ExtraSqlMethod.DELETE_BY_EW.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper));
 	}
@@ -350,7 +349,7 @@ public class GeneralMapper {
 	 * @param entityWrapper
 	 * @return
 	 */
-	public <T> int selectCountByEW(EntityWrapper<T> entityWrapper) {
+	public <T> int selectCountByEW(GeneralEntityWrapper<T> entityWrapper) {
 		return sqlSessionTemplate.selectOne(
 				getSqlStatement(SqlMethod.SELECT_COUNT_EW.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper));
@@ -365,7 +364,7 @@ public class GeneralMapper {
 	 *            实体对象封装操作类（可以为 null）
 	 * @return List
 	 */
-	public <T> List<T> selectList(EntityWrapper<T> entityWrapper) {
+	public <T> List<T> selectList(GeneralEntityWrapper<T> entityWrapper) {
 		List<T> list = sqlSessionTemplate.selectList(
 				getSqlStatement(SqlMethod.SELECT_LIST.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper));
@@ -383,7 +382,7 @@ public class GeneralMapper {
 	 *            实体对象封装操作类（可以为 null）
 	 * @return List
 	 */
-	public <T> List<T> selectPage(Pagination page, EntityWrapper<T> entityWrapper) {
+	public <T> List<T> selectPage(Pagination page, GeneralEntityWrapper<T> entityWrapper) {
 		List<T> list = sqlSessionTemplate.selectList(
 				getSqlStatement(SqlMethod.SELECT_PAGE.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper), page);
@@ -464,7 +463,7 @@ public class GeneralMapper {
 	 * @param list EntityList
 	 * @return
 	 */
-	protected <T> List<T> wrapResult(List<T> list, EntityWrapper<T> entityWrapper) {
+	protected <T> List<T> wrapResult(List<T> list, GeneralEntityWrapper<T> entityWrapper) {
 		return wrapResult(list, entityWrapper.getEntity().getClass());
 	}
 	
