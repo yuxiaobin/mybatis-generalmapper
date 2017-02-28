@@ -5,6 +5,7 @@ import static org.springframework.util.StringUtils.tokenizeToStringArray;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
@@ -13,21 +14,32 @@ import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.reflections.Reflections;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.StringUtils;
 
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
 import com.baomidou.mybatisplus.toolkit.PackageHelper;
 import com.github.yuxiaobin.mybatis.gm.GeneralMapper;
 import com.github.yuxiaobin.mybatis.gm.GeneralSqlSessionFactoryBean;
 import com.github.yuxiaobin.mybatis.gm.mapper.GeneralMapperSqlInjector;
+import com.github.yuxiaobin.mybatis.gm.plus.GeneralEntitySubTypesHolder;
 
 /**
+ * This class is used to inject SQL for entity.<BR>
+ * 
+ * V1.8: scan sub-entities for entity, which is used for supporting query by subtypes. 
+ * 
  * @author Kelly Lake(179634696@qq.com)
  */
-public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
+public class MybatisGeneralEntityProcessor implements BeanPostProcessor,ApplicationListener<ApplicationEvent> {
 	
 	private static final Log LOGGER = LogFactory.getLog(MybatisGeneralEntityProcessor.class);
 
@@ -36,6 +48,8 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
     private boolean plusInject = false;
     
     private String typeAliasesPackage;
+    
+    private String[] typeAliasPackageArray;
     
     public MybatisGeneralEntityProcessor(GeneralMapperSqlInjector generalSqlInjector) {
         this.generalSqlInjector = generalSqlInjector;
@@ -72,7 +86,7 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
                  plusInject = true;
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MybatisPlusException(e);
         }
         return bean;
     }
@@ -86,13 +100,10 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug("injectSql(): typeAliasesPackage="+typeAliasesPackage);
 			}
-			String[] typeAliasPackageArray = parseTypeAliasPackage(this.typeAliasesPackage);
+			typeAliasPackageArray = parseTypeAliasPackage(this.typeAliasesPackage);
 			if(typeAliasPackageArray!=null){
 				for (String packageToScan : typeAliasPackageArray) {
 					configuration.getTypeAliasRegistry().registerAliases(packageToScan, Object.class );
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("Scanned package: '" + packageToScan + "' for aliases");
-					}
 				}
 			}
 		}
@@ -163,4 +174,35 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor {
     protected boolean checkBeanType(Class<?> entityClazz){
     	return true;
     }
+
+    /**
+     * Scan sub-types for Entity. So that allows to query by sub-types.<BR>
+     * <BR>
+     * public class User;//is a persistent object.<BR>
+     * public class UserVO extends User;<BR>
+     * <BR>
+     * List&lt;UserVO&gt; list = generalMapper.selectList(UserVO);<BR>
+     */
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if(event instanceof ContextRefreshedEvent){
+			if(typeAliasPackageArray!=null){
+				for(String persistentPackage:typeAliasPackageArray){
+					if(StringUtils.hasLength(persistentPackage)){
+						int index = persistentPackage.lastIndexOf(".");
+						String entityPackage = persistentPackage.substring(0,index);
+						Reflections reflections = new Reflections(entityPackage);
+						Set<Class<?>> entityClazzSet = reflections.getTypesAnnotatedWith(TableName.class, true);
+						for(Class<?> entityClazz:entityClazzSet){
+							Set<?> modules = reflections.getSubTypesOf(entityClazz);
+				            for(Object c:modules){
+				            	GeneralEntitySubTypesHolder.put((Class<?>)c, entityClazz);
+				            }
+				            GeneralEntitySubTypesHolder.put(entityClazz, entityClazz);
+						}
+					}
+				}
+			}
+		}
+	}
 }

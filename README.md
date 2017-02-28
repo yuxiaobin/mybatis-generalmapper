@@ -19,9 +19,14 @@ What you need is:
 
 #Maven
 	<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus</artifactId>
+			<version>1.5</version>
+		</dependency>
+	<dependency>
 			<groupId>com.github.yuxiaobin</groupId>
 			<artifactId>mybatis-generalmapper</artifactId>
-			<version>1.7</version>
+			<version>1.8</version>
 		</dependency>
 
 #Release History
@@ -32,7 +37,8 @@ What you need is:
 * v_1.4: Add deleteByEW(EntityWrapper);
 * v_1.5: Wrap result : use ew.entity.type, to solve returned parent class object;
 * v_1.6: Add GeneralEntityWrapper: to solve such as ew.and("col_dt={0}", Date val) sqlSegment issue.
-* v_1.7: SQL inject bypass classes under java/apache/spring/hibernate; use GeneralEntityWrapper in byEW methods to avoid v_1.6 issue. 
+* v_1.7: SQL inject bypass classes under java/apache/spring/hibernate; use GeneralEntityWrapper in byEW methods to avoid v_1.6 issue.
+* v_1.8: Add GeneralPaginationInterceptor,GeneralSqlChangeInterceptor, to allow multiple Sql change interceptors for Query ONLY(See Sample Code below).
 
 #Roadmap
 * support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'
@@ -40,26 +46,76 @@ What you need is:
 
 #Some Sample Code for Spring Boot
 	
-	@MapperScan("com.*.*.mapper")//use this path to scan *Mapper.java
-	MybatisConfig{
-		@Bean
-		public SqlSessionFactoryBean sqlSessionFactory (DataSource dataSource){
-			SqlSessionFactoryBean sqlSessionFactory = new GeneralSqlSessionFactoryBean();
-			sqlSessionFactory.setDataSource(dataSource);
-			sqlSessionFactory.setVfs(SpringBootVFS.class);
-			sqlSessionFactory.setTypeAliasesPackage("com.*.*.persistent");
-			MybatisConfiguration configuration = new MybatisConfiguration();
-			configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
-			sqlSessionFactory.setConfiguration(configuration);
-			sqlSessionFactory.setMapperLocations("mybatis\mapper\*.xml");
-			return sqlSessionFactory;
+	@Configuraion
+	public class GeneralMapperConfig {
+		private final GeneralSqlChangeInterceptor[] interceptors;
+		public GeneralMapperConfig(ObjectProvider<GeneralSqlChangeInterceptor[]> interceptorsProvider){
+			this.interceptors = interceptorsProvider.getIfAvailable();
 		}
 		@Bean
-		public GeneralMapper generalMapper(SqlSessionFactoryBean sqlSessionFactory){
-			GeneralMapper generalMapper = new GeneralMapper();
-			generalMapper.setSqlSessionFactoryBean(sqlSessionFactory);
-			return generalMapper;
+		public GeneralPaginationInterceptor paginationInterceptor(){
+			return new GeneralPaginationInterceptor(interceptors);
 		}
+	}
+	
+	@Configuration
+	@MapperScan("com.github.yuxiaobin.test.mapper")
+	@Import({GeneralMapperBootstrapConfiguration.class})
+	@EnableConfigurationProperties(MybatisProperties.class)
+	public class MybatisConfig{
+
+		private final MybatisProperties properties;
+	  private final Interceptor[] interceptors;
+	  private final ResourceLoader resourceLoader;
+	  private final DatabaseIdProvider databaseIdProvider;
+	
+		public MybatisConfig(MybatisProperties properties,
+								            ObjectProvider<Interceptor[]> interceptorsProvider,
+								            ResourceLoader resourceLoader,
+								            ObjectProvider<DatabaseIdProvider> databaseIdProvider){
+			this.properties = properties;
+	    this.interceptors = interceptorsProvider.getIfAvailable();
+	    this.resourceLoader = resourceLoader;
+	    this.databaseIdProvider = databaseIdProvider.getIfAvailable();
+	}
+	
+	@Bean
+	public GeneralMapper generalMapper(GeneralSqlSessionFactoryBean factoryBean) throws Exception{
+		GeneralMapper generalMapper = new GeneralMapper();
+		generalMapper.setSqlSessionFactory(factoryBean.getObject());
+		return generalMapper;
+	}
+	
+	@Bean
+	public GeneralSqlSessionFactoryBean sqlSessionFactory (DataSource dataSource){
+		GeneralSqlSessionFactoryBean sqlSessionFactory = new GeneralSqlSessionFactoryBean();
+		sqlSessionFactory.setDataSource(dataSource);
+		sqlSessionFactory.setVfs(SpringBootVFS.class);
+		if (!ObjectUtils.isEmpty(this.interceptors)) {
+			sqlSessionFactory.setPlugins(this.interceptors);
+		}else{
+			sqlSessionFactory.setPlugins(new Interceptor[]{new GeneralPaginationInterceptor(null)});
+		}
+		if (this.databaseIdProvider != null) {
+			sqlSessionFactory.setDatabaseIdProvider(this.databaseIdProvider);
+		}
+		if(!StringUtils.isEmpty(properties.getTypeAliasesPackage())){
+			sqlSessionFactory.setTypeAliasesPackage(properties.getTypeAliasesPackage());//多个不同的包，可以用 , ; 分隔
+		}else{
+			sqlSessionFactory.setTypeAliasesPackage("com.github.yuxiaobin.test.persistent");
+		}
+		if(StringUtils.hasText(this.properties.getConfigLocation())) {
+			 sqlSessionFactory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
+		}
+		MybatisConfiguration configuration = new MybatisConfiguration();
+		configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
+		configuration.setJdbcTypeForNull(JdbcType.NULL);
+		org.apache.ibatis.session.Configuration config = properties.getConfiguration();
+		if(config!=null){
+			configuration.setMapUnderscoreToCamelCase(config.isMapUnderscoreToCamelCase());
+		}
+		sqlSessionFactory.setConfiguration(configuration);
+		return sqlSessionFactory;
 	}
 	
 	Service:

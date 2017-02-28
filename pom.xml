@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.yuxiaobin</groupId>
 	<artifactId>mybatis-generalmapper</artifactId>
-	<version>1.7</version>
+	<version>1.8</version>
 	<name>mybatis-generalmapper</name>
 	<description>A middle-ware for mybatis plus, you can use it to CRUD single table without any sql.</description>
 	<url>https://github.com/yuxiaobin/mybatis-generalmapper</url>
@@ -34,7 +34,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.context.version>4.3.3.RELEASE</spring.context.version>
 		<mybatis.plus.version>1.5</mybatis.plus.version>
-		<common.lang3..version>3.4</common.lang3..version>
+		<common.lang3.version>3.4</common.lang3.version>
+		<org.reflections.version>0.9.10</org.reflections.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -42,6 +43,11 @@
 			<artifactId>spring-context</artifactId>
 			<version>${spring.context.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-jdbc</artifactId>
+		  <version>${spring.context.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.baomidou</groupId>
@@ -52,8 +58,13 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>${common.lang3..version}</version>
+			<version>${common.lang3.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>${org.reflections.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -63,8 +74,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 		</plugins>

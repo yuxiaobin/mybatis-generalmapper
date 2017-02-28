@@ -62,6 +62,19 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 
 	private static final long serialVersionUID = 1L;
 
+	
+	public GeneralEntityWrapper() {
+		super();
+	}
+
+	public GeneralEntityWrapper(T entity, String sqlSelect) {
+		super(entity, sqlSelect);
+	}
+
+	public GeneralEntityWrapper(T entity) {
+		super(entity);
+	}
+
 	/**
 	 * Plus Injected Sql will use EntityWrapper.sqlSegment in sql script<BR>
 	 * <BR>
@@ -92,6 +105,9 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	 */
 	public boolean checkFieldValueNotNull(){
 		Class<?> realEntityClazz = GeneralEntitySubTypesHolder.get(entity.getClass());
+		if(realEntityClazz==null){
+			realEntityClazz = entity.getClass();
+		}
 		TableInfo tableInfo = TableInfoHelper.getTableInfo(realEntityClazz);
 		if (null == tableInfo) {
 			return false;

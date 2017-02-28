@@ -25,17 +25,19 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Import;
 
+import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
 import com.github.yuxiaobin.mybatis.gm.mapper.GeneralMapperSqlInjector.ExtraSqlMethod;
+import com.github.yuxiaobin.mybatis.gm.plus.GeneralEntitySubTypesHolder;
 import com.github.yuxiaobin.mybatis.gm.processer.MybatisGeneralEntityProcessor;
 
 /**
  * @author Kelly Lake(179634696@qq.com)
  */
 @Import(GeneralMapperBootstrapConfiguration.class)
-public class GeneralMapper {
+public class GeneralMapper{
 
 	private SqlSessionTemplate sqlSessionTemplate;
 
@@ -43,7 +45,7 @@ public class GeneralMapper {
 		try {
 			this.sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new MybatisPlusException(e);
 		}
 	}
 
@@ -383,6 +385,7 @@ public class GeneralMapper {
 	 * @return List
 	 */
 	public <T> List<T> selectPage(Pagination page, GeneralEntityWrapper<T> entityWrapper) {
+		page.setSearchCount(false);//page.searchCount=true by default, which will cause PaginationInterceptor searchCount again. actually no need to do the query
 		List<T> list = sqlSessionTemplate.selectList(
 				getSqlStatement(SqlMethod.SELECT_PAGE.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper), page);
@@ -412,6 +415,9 @@ public class GeneralMapper {
 	}
 
 	/**
+	 * V1.8: Update<BR>
+	 * generalmapper helps to scan sub-entities.
+	 * 
 	 * 开放接口供子类实现特殊逻辑
 	 * （比如entityWrapper里面的实体其实是VO extends Entity.
 	 * 		复写该方法实现获取Entity.class) 
@@ -428,7 +434,8 @@ public class GeneralMapper {
 	 * @return
 	 */
 	protected Class<?> getCorrespondingEntityClass(Class<?> clazz){
-		return clazz;
+		Class<?> corrClazz = GeneralEntitySubTypesHolder.get(clazz);
+		return corrClazz==null?clazz:corrClazz;
 	}
 
 	/**
@@ -451,7 +458,7 @@ public class GeneralMapper {
 				}
 				return realList;
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new MybatisPlusException(e);
 			} 
 		}
 		return list;
@@ -483,7 +490,7 @@ public class GeneralMapper {
 				BeanUtils.copyProperties(result, record);
 				return record;
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new MybatisPlusException(e);
 			} 
 		}
 		return result;
