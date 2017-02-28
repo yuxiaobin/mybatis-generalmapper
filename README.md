@@ -18,16 +18,17 @@ What you need is:
 * Mybatis-generalmapper uses the sql injection by plus(currently use plus v_1.5).
 
 #Maven
+	
 	<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus</artifactId>
-			<version>1.5</version>
-		</dependency>
+		<groupId>com.baomidou</groupId>
+		<artifactId>mybatis-plus</artifactId>
+		<version>1.5</version>
+	</dependency>
 	<dependency>
-			<groupId>com.github.yuxiaobin</groupId>
-			<artifactId>mybatis-generalmapper</artifactId>
-			<version>1.8</version>
-		</dependency>
+		<groupId>com.github.yuxiaobin</groupId>
+		<artifactId>mybatis-generalmapper</artifactId>
+		<version>1.8</version>
+	</dependency>
 
 #Release History
 * v_1.0: init
@@ -63,20 +64,18 @@ What you need is:
 	@Import({GeneralMapperBootstrapConfiguration.class})
 	@EnableConfigurationProperties(MybatisProperties.class)
 	public class MybatisConfig{
-
 		private final MybatisProperties properties;
-	  private final Interceptor[] interceptors;
-	  private final ResourceLoader resourceLoader;
-	  private final DatabaseIdProvider databaseIdProvider;
-	
+		private final Interceptor[] interceptors;
+		private final ResourceLoader resourceLoader;
+		private final DatabaseIdProvider databaseIdProvider;
 		public MybatisConfig(MybatisProperties properties,
 								            ObjectProvider<Interceptor[]> interceptorsProvider,
 								            ResourceLoader resourceLoader,
 								            ObjectProvider<DatabaseIdProvider> databaseIdProvider){
 			this.properties = properties;
-	    this.interceptors = interceptorsProvider.getIfAvailable();
-	    this.resourceLoader = resourceLoader;
-	    this.databaseIdProvider = databaseIdProvider.getIfAvailable();
+			this.interceptors = interceptorsProvider.getIfAvailable();
+			this.resourceLoader = resourceLoader;
+			this.databaseIdProvider = databaseIdProvider.getIfAvailable();
 	}
 	
 	@Bean
@@ -129,5 +128,6 @@ What you need is:
 		ew.and(" sample_dt > {0} and sample_dt < {1} ", LocalDate.of(2015, 12, 12).toString(), LocalDate.of(2016, 1, 1).toString());
 		ew.like("sample_nkname", "a");
 		List<SampleTO> list =generalMapper.selectList(ew);
+		List<SampleTO> list =generalMapper.selectPage(new Page<>(1,10),ew);
 	/**********SQL:*********/
 	//select * from tbl_sample where sample_name='123' and sample_age>18 and (sample_dt>'2015-12-12' and sample_dt<'2016-1-1') and sample_nkname like '%a%'
