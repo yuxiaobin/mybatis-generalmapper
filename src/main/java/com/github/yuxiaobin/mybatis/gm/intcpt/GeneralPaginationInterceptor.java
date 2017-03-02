@@ -18,6 +18,7 @@ import org.apache.ibatis.session.RowBounds;
 
 import com.baomidou.mybatisplus.plugins.pagination.DialectFactory;
 import com.baomidou.mybatisplus.plugins.pagination.IDialect;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.github.yuxiaobin.mybatis.gm.exceptions.SqlChangeException;
 import com.github.yuxiaobin.mybatis.gm.utils.GeneralJdbcReflectionUtil;
 
@@ -62,7 +63,12 @@ public class GeneralPaginationInterceptor implements Interceptor {
 				String dbUrl = conn.getMetaData().getURL();
 				String dialectType = GeneralJdbcReflectionUtil.getDbType(dbUrl).getDb();
 				IDialect dialect = DialectFactory.getDialectByDbtype(dialectType);
-				originalSql = dialect.buildPaginationSql(originalSql, rowBounds.getOffset(), rowBounds.getLimit());
+				if(rowBounds instanceof Pagination){//avoid use empty constructor to init Page/Pagination object.
+					Pagination page = (Pagination)rowBounds;
+					originalSql = dialect.buildPaginationSql(originalSql, page.getOffsetCurrent(), page.getSize());
+				}else{
+					originalSql = dialect.buildPaginationSql(originalSql, rowBounds.getOffset(), rowBounds.getLimit());
+				}
 				metaStatementHandler.setValue("delegate.rowBounds.offset", RowBounds.NO_ROW_OFFSET);
 				metaStatementHandler.setValue("delegate.rowBounds.limit", RowBounds.NO_ROW_LIMIT);
 			}
