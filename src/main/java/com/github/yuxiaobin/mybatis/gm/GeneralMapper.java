@@ -446,6 +446,9 @@ public class GeneralMapper{
 	 * @return
 	 */
 	protected <T> List<T> wrapResult(List<T> list, Class<?> entityClazz){
+		if(list==null || list.isEmpty()){
+			return new ArrayList<>(0);
+		}
 		Class<?> realEntityClazz = getCorrespondingEntityClass(entityClazz);
 		if (!entityClazz.equals(realEntityClazz)) {
 			List<T> realList = new ArrayList<>(list.size());
@@ -482,6 +485,9 @@ public class GeneralMapper{
 	 * @return
 	 */
 	protected <T> T wrapResult(T result, Class<?> entityClazz){
+		if(result==null){
+			return null;
+		}
 		Class<?> realEntityClazz = getCorrespondingEntityClass(entityClazz);
 		if (!entityClazz.equals(realEntityClazz)) {
 			try {
