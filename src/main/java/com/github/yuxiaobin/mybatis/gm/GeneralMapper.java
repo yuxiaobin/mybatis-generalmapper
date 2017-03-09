@@ -199,7 +199,7 @@ public class GeneralMapper{
 
 	/**
 	 * <p>
-	 * 根据 ID 选择修改
+	 * 根据 ID 选择修改(NULL value fields will be ignored)
 	 * </p>
 	 *
 	 * @param entity
