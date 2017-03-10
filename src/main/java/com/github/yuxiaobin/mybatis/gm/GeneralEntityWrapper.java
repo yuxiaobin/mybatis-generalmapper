@@ -174,10 +174,8 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 		}else{
 			if(params!=null && params.length!=0){
 				int size = params.length;
-				String[] paramNames = new String[size];
 				for(int i=0;i<size;++i){
 					String genParamName = GENERAL_PARAMNAME+paramNameSeq.incrementAndGet();
-					paramNames[i] = genParamName;
 					sqlStr = sqlStr.replace("{"+i+"}", OPEN_TOKEN+genParamName+CLOSE_TOKEN);
 					paramNameValuePairs.put(genParamName, params[i]);
 				}
