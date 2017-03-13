@@ -11,7 +11,7 @@ import com.github.yuxiaobin.mybatis.gm.exceptions.SqlChangeException;
  * This {@code GeneralSQLChangeInterceptor} allows multiple interceptors to change sql.<BR>
  * <BR>
  * <b>NOTE:</b><BR>
- * The {@code GeneralSqlChangeInterceptor} will intercept all the query sqls, so you need some config: like {@code SqlChangeInterceptorFlagHolder} which contains a {@link java.lang.ThreadLocal}<>.<BR>
+ * The {@code GeneralSqlChangeInterceptor} will intercept all the query sqls, so you need some config: like {@code SqlChangeInterceptorFlagHolder} which contains a {@link java.lang.ThreadLocal}.<BR>
  * In intercept() check the {@code flag} to determine if need to change the sql.<BR>
  * 
  * <BR>
