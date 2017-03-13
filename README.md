@@ -40,6 +40,7 @@ What you need is:
 * v_1.6: Add GeneralEntityWrapper: to solve such as ew.and("col_dt={0}", Date val) sqlSegment issue.
 * v_1.7: SQL inject bypass classes under java/apache/spring/hibernate; use GeneralEntityWrapper in byEW methods to avoid v_1.6 issue.
 * v_1.8: Add GeneralPaginationInterceptor,GeneralSqlChangeInterceptor, to allow multiple Sql change interceptors for Query ONLY(See Sample Code below).
+* v_1.8.1: Bug fixing.
 
 #Roadmap
 * support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'

@@ -21,12 +21,12 @@ import com.baomidou.mybatisplus.plugins.pagination.IDialect;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.github.yuxiaobin.mybatis.gm.exceptions.SqlChangeException;
 import com.github.yuxiaobin.mybatis.gm.utils.GeneralJdbcReflectionUtil;
+import com.github.yuxiaobin.mybatis.gm.utils.MybatisPluginUtil;
 
 /**
- * For multiple Interceptors which need to change sql, StatementHandler won't work for second interceptor and the rest.<BR>
+ * Mybatis Physical Pagination Intercetptor.<BR>
  * <BR>
- * Solution:<BR>
- * use {@link GeneralSqlChangeInterceptor}, currently only support passed in String and output String.<BR>
+ * Use {@link GeneralSqlChangeInterceptor} to change <b>Query SQL</b> before executed, currently only support passed in String and output String.<BR>
  * Any query will be intercepted by {@code GeneralPaginationInterceptor}, and for sql change interceptors will be injected to {@code interceptors}.<BR>
  * <BR>
  * Pagination sql will be detected by the {@link java.sql.Connection}. Refer to {@link GeneralJdbcReflectionUtil} and {@link DialectFactory}
@@ -53,7 +53,7 @@ public class GeneralPaginationInterceptor implements Interceptor {
 	public Object intercept(Invocation invocation) throws Throwable {
 		Object target = invocation.getTarget();
 		if (target instanceof StatementHandler) {
-			StatementHandler statementHandler = (StatementHandler) target;
+			StatementHandler statementHandler = (StatementHandler) MybatisPluginUtil.getRealTarget(target);
 			MetaObject metaStatementHandler = SystemMetaObject.forObject(statementHandler);
 			RowBounds rowBounds = (RowBounds) metaStatementHandler.getValue("delegate.rowBounds");
 			BoundSql boundSql = (BoundSql) metaStatementHandler.getValue("delegate.boundSql");
