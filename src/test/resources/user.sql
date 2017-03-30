@@ -1,0 +1,11 @@
+CREATE TABLE `user` (
+	`test_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+	`name` VARCHAR(30) NULL DEFAULT NULL COMMENT '名称' COLLATE 'utf8_bin',
+	`age` INT(11) NULL DEFAULT NULL COMMENT '年龄',
+	`test_type` INT(11) NULL DEFAULT '0' COMMENT '测试下划线字段命名类型',
+	`test_date` DATETIME NULL DEFAULT NULL,
+	`price` DECIMAL(10,2) NULL DEFAULT NULL,
+	`version` INT(5) NULL DEFAULT NULL,
+	PRIMARY KEY (`test_id`)
+)
+;

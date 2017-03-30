@@ -98,6 +98,8 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
 		this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
 	}
     
+    //TODO:现在insertBatch只支持一种数据库，如果动态切，会出错！！！2017-3-15
+    
     public static enum ExtraSqlMethod{
     	
     	DELETE_BY_EW("deleteByEw", "删除满足条件的记录", "<script>DELETE FROM %s %s</script>");
