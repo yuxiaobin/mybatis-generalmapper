@@ -2,6 +2,10 @@
 * A middle-ware for mybatis plus, you can use it to CRUD single table without any sql.
 * 一个基于mybatis-plus的中间件，让单表CURD无SQL
 
+[![Build Status](https://travis-ci.org/yuxiaobin/mybatis-generalmapper.svg?branch=master)](https://travis-ci.org/yuxiaobin/mybatis-generalmapper)
+[![Coverage Status](https://coveralls.io/repos/github/yuxiaobin/mybatis-generalmapper/badge.svg?branch=master)](https://coveralls.io/github/yuxiaobin/mybatis-generalmapper?branch=master)
+[![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 What you need is: 
 * create an entity with annotation: @TableId(Required), @TableName(Optional, required if entityName not eq tableName, eg: No need:TblUser - tbl\_user; Required: User - tbl\_user) ,
 * then configure typeAliasesPackage to make the entity be scanned by mybatis(v_1.1 add support for `com.github.yuxiaobin.*.persistent`),
