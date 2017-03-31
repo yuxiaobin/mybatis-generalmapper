@@ -27,7 +27,7 @@ What you need is:
 	<dependency>
 		<groupId>com.github.yuxiaobin</groupId>
 		<artifactId>mybatis-generalmapper</artifactId>
-		<version>1.8</version>
+		<version>1.8.2</version>
 	</dependency>
 
 #Release History
@@ -41,10 +41,16 @@ What you need is:
 * v_1.7: SQL inject bypass classes under java/apache/spring/hibernate; use GeneralEntityWrapper in byEW methods to avoid v_1.6 issue.
 * v_1.8: Add GeneralPaginationInterceptor,GeneralSqlChangeInterceptor, to allow multiple Sql change interceptors for Query ONLY(See Sample Code below).
 * v_1.8.1: Bug fixing.
+* v_1.8.2: Bug fixing for typeAliasesPackage contains only one package, which will leads to VO not scanned.
 
 #Roadmap
-* support entityWrapper use property/column name: ew.where("name={0}","123") or ew.where("user_name={0}","123") -> SQL: where user_name='123'
+* support entityWrapper can shield the column names. 
+* User.java has public static class<?> NAME = new class<?>("column_name");
+* ew.and(User.NAME.eq("abc")) -> user_name='abc';
 
+
+#Test Cases
+* Refer to junit test cases for spring xml based.
 
 #Some Sample Code for Spring Boot
 	

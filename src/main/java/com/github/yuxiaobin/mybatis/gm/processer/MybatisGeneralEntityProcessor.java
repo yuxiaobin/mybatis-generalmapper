@@ -190,19 +190,27 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor,Applicat
 				for(String persistentPackage:typeAliasPackageArray){
 					if(StringUtils.hasLength(persistentPackage)){
 						int index = persistentPackage.lastIndexOf(".");
-						String entityPackage = persistentPackage.substring(0,index);
-						Reflections reflections = new Reflections(entityPackage);
-						Set<Class<?>> entityClazzSet = reflections.getTypesAnnotatedWith(TableName.class, true);
-						for(Class<?> entityClazz:entityClazzSet){
-							Set<?> modules = reflections.getSubTypesOf(entityClazz);
-				            for(Object c:modules){
-				            	GeneralEntitySubTypesHolder.put((Class<?>)c, entityClazz);
-				            }
-				            GeneralEntitySubTypesHolder.put(entityClazz, entityClazz);
-						}
+						String entityVOPackage = persistentPackage.substring(0,index);
+						scanEntityVOPackage(entityVOPackage);
 					}
 				}
+			}else{//bug fix for typeAliasesPackage only contains one package.
+				if(typeAliasesPackage!=null){
+					int index = typeAliasesPackage.lastIndexOf(".");
+					scanEntityVOPackage(typeAliasesPackage.substring(0,index));
+				}
 			}
+		}
+	}
+	private void scanEntityVOPackage(String entityVOPackage){
+		Reflections reflections = new Reflections(entityVOPackage);
+		Set<Class<?>> entityClazzSet = reflections.getTypesAnnotatedWith(TableName.class, true);
+		for(Class<?> entityClazz:entityClazzSet){
+			Set<?> modules = reflections.getSubTypesOf(entityClazz);
+            for(Object c:modules){
+            	GeneralEntitySubTypesHolder.put((Class<?>)c, entityClazz);
+            }
+            GeneralEntitySubTypesHolder.put(entityClazz, entityClazz);
 		}
 	}
 }

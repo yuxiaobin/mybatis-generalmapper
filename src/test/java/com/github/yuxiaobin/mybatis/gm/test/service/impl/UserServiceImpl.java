@@ -41,4 +41,42 @@ public class UserServiceImpl implements UserService{
 		return true;
 	}
 
+	/**
+	 * update all fields.
+	 * @param user
+	 * @return
+	 */
+	@Override
+	@Transactional
+	public boolean updateById(User user) {
+		generalMapper.updateById(user);
+		return true;
+	}
+
+	/**
+	 * Only update not-null fields.
+	 * @param user
+	 * @return
+	 */
+	@Override
+	@Transactional
+	public boolean updateSelectiveById(User user) {
+		generalMapper.updateSelectiveById(user);
+		return false;
+	}
+
+	@Override
+	@Transactional
+	public boolean deleteSelective(User user) {
+		generalMapper.deleteSelective(user);
+		return true;
+	}
+
+	@Override
+	@Transactional
+	public boolean deleteByEW(GeneralEntityWrapper<User> ew) {
+		generalMapper.deleteByEW(ew);
+		return true;
+	}
+
 }

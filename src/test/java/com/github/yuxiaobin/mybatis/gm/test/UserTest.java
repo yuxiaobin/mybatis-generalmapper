@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import com.github.yuxiaobin.mybatis.gm.GeneralEntityWrapper;
 import com.github.yuxiaobin.mybatis.gm.GeneralMapper;
 import com.github.yuxiaobin.mybatis.gm.test.entity.mapper.UserMapper;
 import com.github.yuxiaobin.mybatis.gm.test.entity.persistent.User;
+import com.github.yuxiaobin.mybatis.gm.test.entity.vo.UserVO;
 import com.github.yuxiaobin.mybatis.gm.test.service.UserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +45,6 @@ public class UserTest {
 			String createTableSql = readFile("user.ddl.sql");
 			Statement stmt = conn.createStatement();
 			stmt.execute(createTableSql);
-			conn.commit();
 			stmt.execute("truncate table user");
 			insertUsers(stmt);
 			conn.commit();
@@ -163,12 +164,125 @@ public class UserTest {
 	}
 
 	@Test
-	public void wrapperTest(){
+	public void entityWrapperTest(){
 		User userParm = new User();
 		GeneralEntityWrapper<User> ew = new GeneralEntityWrapper<User>(userParm);
 		ew.and("test_date>{0} and test_date<{1}", LocalDate.of(2016, 1, 1), LocalDate.of(2017, 6, 3));
 		List<User> list = generalMapper.selectPage(new Page<User>(1,3), ew);
 		Assert.assertEquals(3, list.size());
+		
+		UserVO userVOParm = new UserVO();
+		ew = new GeneralEntityWrapper<>(userVOParm);
+		ew.and("test_date>#{startDate} and test_date<#{endDate}", LocalDate.of(2016, 1, 1), LocalDate.of(2017, 6, 3));
+		Assert.assertEquals(3, generalMapper.selectPage(new Page<UserVO>(1,3), ew).size());
+	}
+	
+	@Test
+	public void userVOTest(){
+		UserVO userVO = new UserVO();
+		userVO.setId(123L);
+		userVO.setName("userVO");
+		userVO.setAge(19);
+		userVO.setPrice(new BigDecimal("19.99"));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		userVO.setTestDate(cal.getTime());
+		userVO.setTestType(1);
+		userVO.setVersion(1);
+		userService.addUser(userVO);
+		
+		User user = generalMapper.selectById(123L, User.class);
+		Assert.assertNotNull(user);
+	}
+	
+	@Test
+	public void testUpdate(){
+		UserVO userVO = new UserVO();
+		userVO.setName("userVO");
+		userVO.setAge(19);
+		userVO.setPrice(new BigDecimal("19.99"));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		userVO.setTestDate(cal.getTime());
+		userVO.setTestType(1);
+		userVO.setVersion(1);
+		userService.addUser(userVO);
+		
+		User user = new User();
+		user.setId(userVO.getId());
+		user.setPrice(new BigDecimal("9.99"));
+		
+		userService.updateSelectiveById(user);
+		user = generalMapper.selectById(userVO.getId(), User.class);
+		Assert.assertEquals(new BigDecimal("9.99"), user.getPrice());
+		Assert.assertNotNull(user.getTestDate());
+		
+		user.setAge(28);
+		user.setTestDate(null);
+		userService.updateById(user);
+		user = generalMapper.selectById(userVO.getId(), User.class);
+		Assert.assertEquals(28, user.getAge().intValue());
+		Assert.assertNull(user.getTestDate());
+		
+	}
+	
+	@Test
+	public void testDelete(){
+		/*
+		 * deleteById
+		 */
+		UserVO userVO = new UserVO();
+		userVO.setName("userVO");
+		userVO.setAge(19);
+		userVO.setPrice(new BigDecimal("19.99"));
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		userVO.setTestDate(cal.getTime());
+		userVO.setTestType(1);
+		userVO.setVersion(1);
+		userService.addUser(userVO);
+		
+		User user = generalMapper.selectById(userVO.getId(), User.class);
+		Assert.assertNotNull(user);
+		userService.deleteUserById(userVO.getId());
+		user = generalMapper.selectById(userVO.getId(), User.class);
+		Assert.assertNull(user);
+		
+		/*
+		 * deleteSelective
+		 */
+		User user2 = new User();
+		user2.setName("userVO");
+		user2.setAge(19);
+		user2.setPrice(new BigDecimal("19.99"));
+		user2.setTestDate(new Date());
+		user2.setTestType(1);
+		user2.setVersion(1);
+		userService.addUser(userVO);
+		
+		User userParm = new User();
+		userParm.setAge(19);
+		userService.deleteSelective(userParm);
+		Assert.assertNull(generalMapper.selectById(user2.getId(), User.class));
+		
+		/*
+		 * deleteByEW
+		 */
+		User user3 = new User();
+		user3.setName("userVO");
+		user3.setAge(19);
+		user3.setPrice(new BigDecimal("19.99"));
+		user3.setTestDate(new Date());
+		user3.setTestType(1);
+		user3.setVersion(1);
+		userService.addUser(userVO);
+		
+		User userParm2 = new User();
+		GeneralEntityWrapper<User> ew = new GeneralEntityWrapper<>(userParm2);
+		ew.where("age={0}", 19);
+		userService.deleteByEW(ew);
+		Assert.assertNull(generalMapper.selectById(user3.getId(), User.class));
+		
 	}
 	
 }
