@@ -19,6 +19,7 @@ import org.apache.ibatis.session.RowBounds;
 import com.baomidou.mybatisplus.plugins.pagination.DialectFactory;
 import com.baomidou.mybatisplus.plugins.pagination.IDialect;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.baomidou.mybatisplus.plugins.pagination.dialects.MySqlDialect;
 import com.github.yuxiaobin.mybatis.gm.exceptions.SqlChangeException;
 import com.github.yuxiaobin.mybatis.gm.utils.GeneralJdbcReflectionUtil;
 import com.github.yuxiaobin.mybatis.gm.utils.MybatisPluginUtil;
@@ -63,6 +64,9 @@ public class GeneralPaginationInterceptor implements Interceptor {
 				String dbUrl = conn.getMetaData().getURL();
 				String dialectType = GeneralJdbcReflectionUtil.getDbType(dbUrl).getDb();
 				IDialect dialect = DialectFactory.getDialectByDbtype(dialectType);
+				if(dialect==null){
+					dialect = new MySqlDialect();
+				}
 				if(rowBounds instanceof Pagination){//avoid use empty constructor to init Page/Pagination object.
 					Pagination page = (Pagination)rowBounds;
 					originalSql = dialect.buildPaginationSql(originalSql, page.getOffsetCurrent(), page.getSize());

@@ -30,8 +30,6 @@ public class User implements Serializable {
 	/*BigDecimal 测试*/
 	private BigDecimal price;
 
-	/* 测试下划线字段命名类型, 字段填充 */
-//	@TableField(value = "test_type", validate = FieldStrategy.IGNORED)
 	@TableField(value = "test_type")
 	private Integer testType;
 
