@@ -3,7 +3,7 @@
 * 一个基于mybatis-plus的中间件，让单表CURD无SQL
 
 [![Build Status](https://travis-ci.org/yuxiaobin/mybatis-generalmapper.svg?branch=master)](https://travis-ci.org/yuxiaobin/mybatis-generalmapper)
-[![Coverage Status](https://coveralls.io/repos/github/yuxiaobin/mybatis-generalmapper/badge.svg?branch=master)](https://coveralls.io/github/yuxiaobin/mybatis-generalmapper?branch=master)
+[![Coverage Status](https://coveralls.io/repos/yuxiaobin/mybatis-generalmapper/badge.svg?branch=master)](https://coveralls.io/yuxiaobin/mybatis-generalmapper?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.yuxiaobin.mybatis/mybatis-generalmapper/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.yuxiaobin.mybatis/mybatis-generalmapper)
 [![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
