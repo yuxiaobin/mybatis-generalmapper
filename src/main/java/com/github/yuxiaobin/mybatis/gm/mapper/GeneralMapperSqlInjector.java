@@ -1,5 +1,8 @@
 package com.github.yuxiaobin.mybatis.gm.mapper;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -10,6 +13,7 @@ import org.apache.ibatis.session.Configuration;
 import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.mapper.AutoSqlInjector;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
+import com.baomidou.mybatisplus.toolkit.TableFieldInfo;
 import com.baomidou.mybatisplus.toolkit.TableInfo;
 import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
 
@@ -22,6 +26,10 @@ import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
 public class GeneralMapperSqlInjector extends AutoSqlInjector {
 	
 	protected static final Logger logger = Logger.getLogger("GeneralMapperSqlInjector");
+	
+	private final List<String> keywords = new ArrayList<>();
+	
+	private String keyWordWrapper = null;
 
     /**
      * CRUD sql inject
@@ -32,7 +40,32 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
         this.configuration = configuration;
         this.builderAssistant = builderAssistant;
         this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
-        this.dbType = MybatisConfiguration.DB_TYPE;
+        if(configuration instanceof MybatisConfiguration){
+        	this.dbType = MybatisConfiguration.DB_TYPE;
+        }
+		switch (this.dbType) {
+		case MYSQL:
+			keyWordWrapper = "'";
+			keywords.add("ASC");
+			keywords.add("DESC");
+			break;
+		case ORACLE:
+			keyWordWrapper = "\"";
+			keywords.add("ASC");
+			keywords.add("AS");
+			keywords.add("CHAR");
+			keywords.add("COLUMN");
+			keywords.add("COMMENT");
+			keywords.add("DATE");
+			keywords.add("DECIMAL");
+			keywords.add("DELETE");
+			keywords.add("DESC");
+			keywords.add("FOR");
+			keywords.add("GROUP");
+			keywords.add("LEVEL");
+			break;
+		}
+        
         String modelClassName = modelClass.getName();
         String pattern = "^org.(apache|spring|hibernate).*";
         /*
@@ -126,4 +159,69 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
 		}
     	
     }
+
+	@Override
+	protected String sqlSelectColumns(TableInfo table, boolean entityWrapper) {
+		StringBuilder columns = new StringBuilder();
+		if (null != table.getResultMap()) {
+			/*
+			 * 存在 resultMap 映射返回
+			 */
+			if (entityWrapper) {
+				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
+			}
+			columns.append("*");
+			if (entityWrapper) {
+				columns.append("</otherwise></choose>");
+			}
+		} else {
+			/*
+			 * 普通查询
+			 */
+			if (entityWrapper) {
+				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
+			}
+			if (table.isKeyRelated()) {
+				columns.append(table.getKeyColumn()).append(" AS ").append(convertKeyWords4Property(table.getKeyProperty()));
+			} else {
+				columns.append(convertKeyWords4Property(table.getKeyProperty()));
+			}
+			List<TableFieldInfo> fieldList = table.getFieldList();
+			for (TableFieldInfo fieldInfo : fieldList) {
+				columns.append(",").append(fieldInfo.getColumn());
+				if (fieldInfo.isRelated()) {
+					columns.append(" AS ").append(convertKeyWords4Property(fieldInfo.getProperty()));
+				}
+			}
+			if (entityWrapper) {
+				columns.append("</otherwise></choose>");
+			}
+		}
+
+		/*
+		 * 返回所有查询字段内容
+		 */
+		return columns.toString();
+	}
+    
+	public String convertKeyWords4Property(String property){
+		if(keywords.contains(property.toUpperCase())){
+			return keyWordWrapper + property+keyWordWrapper;
+		}else{
+			return property;
+		}
+	}
+	
+	public void addKeyWords(Collection<String> words){
+		keywords.addAll(words);
+	}
+    
+	public void addKeyWord(String... words){
+		if(words!=null && words.length!=0){
+			for(String s:words){
+				keywords.add(s);
+			}
+		}
+	}
+    
 }

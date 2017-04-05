@@ -45,6 +45,7 @@ What you need is:
 * v_1.8: Add GeneralPaginationInterceptor,GeneralSqlChangeInterceptor, to allow multiple Sql change interceptors for Query ONLY(See Sample Code below).
 * v_1.8.1: Bug fixing.
 * v_1.8.2: Bug fixing for typeAliasesPackage contains only one package, which will leads to VO not scanned.
+* v_1.8.3: Bug fixing for insertBatch() updateBatch() method: setup jdbc type when init sessionFactoryBean.
 
 #Roadmap
 * support entityWrapper can shield the column names. 

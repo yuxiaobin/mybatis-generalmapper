@@ -25,6 +25,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Import;
 
+import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
@@ -104,8 +105,19 @@ public class GeneralMapper{
 	 * @return int
 	 */
 	public int insertBatch(List<?> entityList) {
-		return sqlSessionTemplate.insert(
-				getSqlStatement(SqlMethod.INSERT_BATCH_MYSQL.getMethod(), entityList.get(0).getClass()), entityList);
+		String sql = null;
+		switch (MybatisConfiguration.DB_TYPE) {
+		case MYSQL:
+			sql = getSqlStatement(SqlMethod.INSERT_BATCH_MYSQL.getMethod(), entityList.get(0).getClass());
+			break;
+		case ORACLE:
+			sql = getSqlStatement(SqlMethod.INSERT_BATCH_ORACLE.getMethod(), entityList.get(0).getClass());
+			break;
+		default:
+			sql = getSqlStatement(SqlMethod.INSERT_BATCH_MYSQL.getMethod(), entityList.get(0).getClass());
+			break;
+		}
+		return sqlSessionTemplate.insert(sql, entityList);
 	}
 
 	/**
@@ -258,9 +270,18 @@ public class GeneralMapper{
 	 * @return int
 	 */
 	public int updateBatchById(List<?> entityList) {
-		return sqlSessionTemplate.update(
-				getSqlStatement(SqlMethod.UPDATE_BATCH_BY_ID_MYSQL.getMethod(), entityList.get(0).getClass()),
-				entityList);
+		String sql = null;
+		switch (MybatisConfiguration.DB_TYPE) {
+		case MYSQL:
+			sql = getSqlStatement(SqlMethod.UPDATE_BATCH_BY_ID_MYSQL.getMethod(), entityList.get(0).getClass());
+			break;
+		case ORACLE:
+			sql = getSqlStatement(SqlMethod.UPDATE_BATCH_BY_ID_ORACLE.getMethod(), entityList.get(0).getClass());
+		default:
+			sql = getSqlStatement(SqlMethod.INSERT_BATCH_MYSQL.getMethod(), entityList.get(0).getClass());
+			break;
+		}
+		return sqlSessionTemplate.update(sql, entityList);
 	}
 
 	/**
