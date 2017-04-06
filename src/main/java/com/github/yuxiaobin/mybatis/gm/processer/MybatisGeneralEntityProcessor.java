@@ -43,7 +43,7 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor,Applicat
 	
 	private static final Log LOGGER = LogFactory.getLog(MybatisGeneralEntityProcessor.class);
 
-    private GeneralMapperSqlInjector generalSqlInjector;
+    private final GeneralMapperSqlInjector generalSqlInjector;
 
     private boolean plusInject = false;
     

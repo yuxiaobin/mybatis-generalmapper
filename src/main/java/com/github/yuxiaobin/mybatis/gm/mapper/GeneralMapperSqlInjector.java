@@ -1,17 +1,18 @@
 package com.github.yuxiaobin.mybatis.gm.mapper;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
-import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.mapper.AutoSqlInjector;
+import com.baomidou.mybatisplus.mapper.DBType;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.toolkit.TableFieldInfo;
 import com.baomidou.mybatisplus.toolkit.TableInfo;
@@ -27,10 +28,10 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
 	
 	protected static final Logger logger = Logger.getLogger("GeneralMapperSqlInjector");
 	
-	private final List<String> keywords = new ArrayList<>();
+	private final Set<String> keywords = new HashSet<>();
 	
 	private String keyWordWrapper = null;
-
+	
     /**
      * CRUD sql inject
      */
@@ -40,32 +41,7 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
         this.configuration = configuration;
         this.builderAssistant = builderAssistant;
         this.languageDriver = configuration.getDefaultScriptingLanuageInstance();
-        if(configuration instanceof MybatisConfiguration){
-        	this.dbType = MybatisConfiguration.DB_TYPE;
-        }
-		switch (this.dbType) {
-		case MYSQL:
-			keyWordWrapper = "'";
-			keywords.add("ASC");
-			keywords.add("DESC");
-			break;
-		case ORACLE:
-			keyWordWrapper = "\"";
-			keywords.add("ASC");
-			keywords.add("AS");
-			keywords.add("CHAR");
-			keywords.add("COLUMN");
-			keywords.add("COMMENT");
-			keywords.add("DATE");
-			keywords.add("DECIMAL");
-			keywords.add("DELETE");
-			keywords.add("DESC");
-			keywords.add("FOR");
-			keywords.add("GROUP");
-			keywords.add("LEVEL");
-			break;
-		}
-        
+
         String modelClassName = modelClass.getName();
         String pattern = "^org.(apache|spring|hibernate).*";
         /*
@@ -224,4 +200,29 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
 		}
 	}
     
+	public void setDBType(DBType dbType){
+		this.dbType = dbType;
+		switch (this.dbType) {
+		case MYSQL:
+			keyWordWrapper = "'";
+			keywords.add("ASC");
+			keywords.add("DESC");
+			break;
+		case ORACLE:
+			keyWordWrapper = "\"";
+			keywords.add("ASC");
+			keywords.add("AS");
+			keywords.add("CHAR");
+			keywords.add("COLUMN");
+			keywords.add("COMMENT");
+			keywords.add("DATE");
+			keywords.add("DECIMAL");
+			keywords.add("DELETE");
+			keywords.add("DESC");
+			keywords.add("FOR");
+			keywords.add("GROUP");
+			keywords.add("LEVEL");
+			break;
+		}
+	}
 }
