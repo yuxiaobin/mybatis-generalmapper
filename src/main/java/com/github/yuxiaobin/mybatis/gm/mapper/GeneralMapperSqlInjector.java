@@ -222,6 +222,7 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
 			keywords.add("FOR");
 			keywords.add("GROUP");
 			keywords.add("LEVEL");
+			keywords.add("SIZE");
 			break;
 		}
 	}
