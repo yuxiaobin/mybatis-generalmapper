@@ -47,6 +47,7 @@ What you need is:
 * v_1.8.2: Bug fixing for typeAliasesPackage contains only one package, which will leads to VO not scanned.
 * v_1.8.3: Bug fixing for insertBatch() updateBatch() method: setup jdbc type when init sessionFactoryBean.
 * v_1.8.4: Add oracle/mysql keywords properties support: define keywords.properties in classpath(refer to src/test/resources/keywords.properties).
+* v_1.8.5: Bug fixing for batchUpdatebyIds
 
 #Roadmap
 * support entityWrapper can shield the column names. 

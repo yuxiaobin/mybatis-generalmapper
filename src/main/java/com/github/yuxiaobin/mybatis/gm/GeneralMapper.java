@@ -277,8 +277,9 @@ public class GeneralMapper{
 			break;
 		case ORACLE:
 			sql = getSqlStatement(SqlMethod.UPDATE_BATCH_BY_ID_ORACLE.getMethod(), entityList.get(0).getClass());
+			break;
 		default:
-			sql = getSqlStatement(SqlMethod.INSERT_BATCH_MYSQL.getMethod(), entityList.get(0).getClass());
+			sql = getSqlStatement(SqlMethod.UPDATE_BATCH_BY_ID_MYSQL.getMethod(), entityList.get(0).getClass());
 			break;
 		}
 		return sqlSessionTemplate.update(sql, entityList);
