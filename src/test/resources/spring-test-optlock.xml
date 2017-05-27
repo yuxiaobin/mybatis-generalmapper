@@ -8,5 +8,5 @@
 	<context:component-scan base-package="com.github.yuxiaobin.mybatis.gm.test.service"/>
 
 	<bean name="/DBConfig" class="com.github.yuxiaobin.mybatis.gm.test.config.DBConfig" />
-	<bean name="/GMConfig" class="com.github.yuxiaobin.mybatis.gm.test.config.GMConfig" />
+	<bean name="/GMConfigWithOptLocker" class="com.github.yuxiaobin.mybatis.gm.test.config.GMConfigWithOptLocker" />
 </beans>

@@ -178,6 +178,17 @@ public class UserTest {
 	}
 	
 	@Test
+	public void testEwSqlSelect(){
+		User parm = new User();
+		GeneralEntityWrapper<User> ew = new GeneralEntityWrapper<User>(parm,"test_id as id, test_date");
+		List<User> list = generalMapper.selectPage(new Page<User>(1,3), ew);
+		list.forEach((x)->{
+			Assert.assertNotNull(x.getId());
+			Assert.assertNotNull(x.getTestDate());
+		});
+	}
+	
+	@Test
 	public void userVOTest(){
 		UserVO userVO = new UserVO();
 		userVO.setId(123L);
@@ -285,4 +296,11 @@ public class UserTest {
 		
 	}
 	
+	
+	@Test
+	public void testMapperMethod(){
+		List<User> list = userMapper.selectUsers();
+		Assert.assertNotNull(list);
+		Assert.assertTrue(list.size()!=0);
+	}
 }

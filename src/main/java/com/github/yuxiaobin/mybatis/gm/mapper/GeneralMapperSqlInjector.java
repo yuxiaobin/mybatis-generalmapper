@@ -106,12 +106,28 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
 		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, Map.class);
 		this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
 	}
+
+	protected void injectUpdateByIdSql(boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
+		ExtraSqlMethod sqlMethod = ExtraSqlMethod.GM_UPDATE_BY_ID;
+		if (selective) {
+			sqlMethod = ExtraSqlMethod.GM_UPDATE_SELECTIVE_BY_ID;
+		}
+		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlSet(selective, table), table.getKeyColumn(),
+				table.getKeyProperty(),
+				"<if test=\"MP_OPTLOCK_VERSION_ORIGINAL!=null\">"
+					+ "and ${MP_OPTLOCK_VERSION_COLUMN}=#{MP_OPTLOCK_VERSION_ORIGINAL}"
+				+ "</if>");
+		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
+		this.addUpdateMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource);
+	}
     
     //TODO:现在insertBatch只支持一种数据库，如果动态切，会出错！！！2017-3-15
     
-    public static enum ExtraSqlMethod{
+    public enum ExtraSqlMethod{
     	
-    	DELETE_BY_EW("deleteByEw", "删除满足条件的记录", "<script>DELETE FROM %s %s</script>");
+    	DELETE_BY_EW("deleteByEw", "删除满足条件的记录", "<script>DELETE FROM %s %s</script>"),
+		GM_UPDATE_BY_ID("updateById", "根据ID 修改数据", "<script>UPDATE %s %s WHERE %s=#{et.%s} %s</script>"),
+		GM_UPDATE_SELECTIVE_BY_ID("updateSelectiveById", "根据ID 选择修改数据", "<script>UPDATE %s %s WHERE %s=#{et.%s} %s</script>"),;
     	
     	private final String method;
     	

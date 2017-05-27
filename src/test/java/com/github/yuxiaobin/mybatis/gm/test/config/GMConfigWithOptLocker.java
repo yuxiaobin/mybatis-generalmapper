@@ -15,6 +15,7 @@ import com.github.yuxiaobin.mybatis.gm.GeneralMapper;
 import com.github.yuxiaobin.mybatis.gm.GeneralSqlSessionFactoryBean;
 import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
 import com.github.yuxiaobin.mybatis.gm.intcpt.GeneralPaginationInterceptor;
+import com.github.yuxiaobin.mybatis.gm.intcpt.OptimisticLockerInterceptor;
 import com.github.yuxiaobin.mybatis.gm.plus.GeneralMybatisXMLLanguageDriver;
 
 /**
@@ -26,7 +27,7 @@ import com.github.yuxiaobin.mybatis.gm.plus.GeneralMybatisXMLLanguageDriver;
 @ComponentScan({"com.github.yuxiaobin.mybatis.gm.test.service"})
 @MapperScan("com.github.yuxiaobin.mybatis.gm.test.entity.mapper")
 @Import({GeneralMapperBootstrapConfiguration.class})
-public class GMConfig {
+public class GMConfigWithOptLocker {
 
 	@Bean
 	public GeneralSqlSessionFactoryBean sqlSessionFactory (DataSource dataSource){
@@ -40,6 +41,7 @@ public class GMConfig {
 		sqlSessionFactory.setConfiguration(configuration);
 		sqlSessionFactory.setPlugins(new Interceptor[]{
 				new GeneralPaginationInterceptor(null),
+				new OptimisticLockerInterceptor()
 		});
 		return sqlSessionFactory;
 	}

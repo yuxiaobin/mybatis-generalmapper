@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.yuxiaobin</groupId>
 	<artifactId>mybatis-generalmapper</artifactId>
-	<version>1.8.5</version>
+	<version>1.8.6</version>
 	<name>mybatis-generalmapper</name>
 	<description>A middle-ware for mybatis plus, you can use it to CRUD single table without any sql.</description>
 	<url>https://github.com/yuxiaobin/mybatis-generalmapper</url>
@@ -32,7 +32,7 @@
 	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.context.version>4.3.3.RELEASE</spring.context.version>
+		<spring.context.version>4.3.5.RELEASE</spring.context.version>
 		<mybatis.plus.version>1.5</mybatis.plus.version>
 		<common.lang3.version>3.4</common.lang3.version>
 		<org.reflections.version>0.9.10</org.reflections.version>

@@ -48,6 +48,7 @@ What you need is:
 * v_1.8.3: Bug fixing for insertBatch() updateBatch() method: setup jdbc type when init sessionFactoryBean.
 * v_1.8.4: Add oracle/mysql keywords properties support: define keywords.properties in classpath(refer to src/test/resources/keywords.properties).
 * v_1.8.5: Bug fixing for batchUpdatebyIds
+* v_1.8.6: Add Optimistic Lock Support.(refer to test\java\...\test.OptLockerIntegerVersionTest)
 
 #Roadmap
 * support entityWrapper can shield the column names. 
