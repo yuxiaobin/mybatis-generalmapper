@@ -303,4 +303,11 @@ public class UserTest {
 		Assert.assertNotNull(list);
 		Assert.assertTrue(list.size()!=0);
 	}
+
+
+	@Test
+	public void testXmlMapper(){
+		List<User> list = userMapper.selectListRow();
+		Assert.assertNotNull(list);
+	}
 }

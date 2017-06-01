@@ -23,13 +23,11 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
-import org.springframework.context.annotation.Import;
 
 import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.mapper.SqlMethod;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
 import com.github.yuxiaobin.mybatis.gm.mapper.GeneralMapperSqlInjector.ExtraSqlMethod;
 import com.github.yuxiaobin.mybatis.gm.plus.GeneralEntitySubTypesHolder;
 import com.github.yuxiaobin.mybatis.gm.processer.MybatisGeneralEntityProcessor;
@@ -37,7 +35,6 @@ import com.github.yuxiaobin.mybatis.gm.processer.MybatisGeneralEntityProcessor;
 /**
  * @author Kelly Lake(179634696@qq.com)
  */
-@Import(GeneralMapperBootstrapConfiguration.class)
 public class GeneralMapper{
 
 	private SqlSessionTemplate sqlSessionTemplate;

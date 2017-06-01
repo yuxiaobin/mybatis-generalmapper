@@ -20,4 +20,6 @@ public interface UserMapper {
 			)
 	public List<User> selectUsers();
 
+	public List<User> selectListRow();
+
 }
