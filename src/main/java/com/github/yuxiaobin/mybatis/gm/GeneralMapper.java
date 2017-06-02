@@ -70,7 +70,7 @@ public class GeneralMapper{
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int insert(Object entity) {
 		return sqlSessionTemplate.insert(getSqlStatement(SqlMethod.INSERT_ONE.getMethod(), entity.getClass()), entity);
@@ -85,7 +85,7 @@ public class GeneralMapper{
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int insertSelective(Object entity) {
 		return sqlSessionTemplate.insert(getSqlStatement(SqlMethod.INSERT_ONE_SELECTIVE.getMethod(), entity.getClass()),
@@ -99,7 +99,7 @@ public class GeneralMapper{
 	 *
 	 * @param entityList
 	 *            实体对象列表
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int insertBatch(List<?> entityList) {
 		String sql = null;
@@ -126,7 +126,7 @@ public class GeneralMapper{
 	 *            主键ID
 	 * @param clazz
 	 *            对象类型
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int deleteById(Object id, Class<?> clazz) {
 		return sqlSessionTemplate.delete(getSqlStatement(SqlMethod.DELETE_BY_ID.getMethod(), clazz), id);
@@ -326,7 +326,7 @@ public class GeneralMapper{
 	 *            表字段 map 对象
 	 * @param clazz
 	 *            表字段 map 对象类型
-	 * @return List
+	 * @return List result
 	 */
 	public <T> List<T> selectByMap(Map<String, Object> columnMap, Class<T> clazz) {
 		List<T> list = sqlSessionTemplate.selectList(getSqlStatement(SqlMethod.SELECT_BY_MAP.getMethod(), clazz),
@@ -368,8 +368,9 @@ public class GeneralMapper{
 	 * Select count by entityWrapper.
 	 * </p>
 	 * 
-	 * @param entityWrapper
-	 * @return
+	 * @param entityWrapper entity wrapper
+	 *
+	 * @return int count
 	 */
 	public <T> int selectCountByEW(GeneralEntityWrapper<T> entityWrapper) {
 		return sqlSessionTemplate.selectOne(
@@ -416,8 +417,8 @@ public class GeneralMapper{
 	 * Put GeneralEntityWrapper.paramNameValuePairs to paramMap if {@code obj} is GeneralEntityWrapper.
 	 * 
 	 * @since 1.6
-	 * @param paramName
-	 * @param obj
+	 * @param paramName map key
+	 * @param obj map value
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -450,8 +451,8 @@ public class GeneralMapper{
 	 * Set&lt;?&gt; subClazzs = reflections.getSubTypesOf(entityClazz);
 	 * 
 	 * @author 179634696@qq.com
-	 * @param clazz
-	 * @return
+	 * @param clazz entity/VO class
+	 * @return clazz
 	 */
 	protected Class<?> getCorrespondingEntityClass(Class<?> clazz){
 		Class<?> corrClazz = GeneralEntitySubTypesHolder.get(clazz);
@@ -491,7 +492,7 @@ public class GeneralMapper{
 	 * 
 	 * @param entityWrapper entityWrapper
 	 * @param list EntityList
-	 * @return
+	 * @return list of entity/VOs which is the same type of passed in entity
 	 */
 	protected <T> List<T> wrapResult(List<T> list, GeneralEntityWrapper<T> entityWrapper) {
 		return wrapResult(list, entityWrapper.getEntity().getClass());
@@ -502,7 +503,7 @@ public class GeneralMapper{
 	 * 
 	 * @param result	Entity Object
 	 * @param entityClazz Entity Class or sub-class
-	 * @return
+	 * @return entity/VOs which is the same type of passed in entity
 	 */
 	protected <T> T wrapResult(T result, Class<?> entityClazz){
 		if(result==null){

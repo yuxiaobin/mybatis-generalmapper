@@ -10,6 +10,8 @@ public abstract class MybatisPluginUtil {
 	/**
 	 * 获得真正的处理对象,可能多层代理.<BR>
 	 * Get the real object for mybatis plugin.
+	 *
+	 * @param target wrapped target object
 	 */
 	public static Object getRealTarget(Object target) {
 		if (Proxy.isProxyClass(target.getClass())) {

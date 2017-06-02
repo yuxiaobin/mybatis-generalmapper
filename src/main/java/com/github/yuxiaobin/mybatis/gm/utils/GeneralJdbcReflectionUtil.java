@@ -59,7 +59,7 @@ public class GeneralJdbcReflectionUtil {
 		 *
 		 * @param dbType
 		 *            数据库类型字符串
-		 * @return
+		 * @return DBType
 		 */
 		public static DBType getDBType(String dbType) {
 			DBType[] dts = DBType.values();
@@ -84,7 +84,7 @@ public class GeneralJdbcReflectionUtil {
 	 * 
 	 * @param jdbcUrl
 	 *            连接地址
-	 * @return
+	 * @return DBType
 	 */
 	public static DBType getDbType(String jdbcUrl) {
 		if (StringUtils.isEmpty(jdbcUrl)) {

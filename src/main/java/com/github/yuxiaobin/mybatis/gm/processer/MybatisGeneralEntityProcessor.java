@@ -93,7 +93,7 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor,Applicat
 
     /**
      *
-     * @param SqlSessionFactory sqlsessionfactoryBean
+     * @param configuration Mybatis Configuration.
      */
     private void injectSql(Configuration configuration) {
 		if(StringUtils.hasLength(typeAliasesPackage) && typeAliasesPackage.contains("*")){
@@ -123,7 +123,7 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor,Applicat
      * can be parsed as ["com.github.yuxiaobin.auth.persistent", "com.github.yuxiaobin.buz.persistent",...]
      * 
      * @since 1.2
-     * @param typeAliasesPackage
+     * @param typeAliasesPackage entity class path.
      * @return
      */
     public static String[] parseTypeAliasPackage(String typeAliasesPackage){
@@ -168,8 +168,8 @@ public class MybatisGeneralEntityProcessor implements BeanPostProcessor,Applicat
      * 
      * Allow additional process of mybatis entity.
      * 
-     * @param entityClazz
-     * @return
+     * @param entityClazz entity class
+     * @return true
      */
     protected boolean checkBeanType(Class<?> entityClazz){
     	return true;

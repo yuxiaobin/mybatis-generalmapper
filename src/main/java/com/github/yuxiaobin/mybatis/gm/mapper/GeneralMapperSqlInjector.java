@@ -97,8 +97,9 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
      * 
      * 条件：EntityWrapper<BR>
      * 
-     * @param mapperClass
-     * @param table
+     * @param mapperClass mapper class
+     * @param modelClass model class
+     * @param table table info
      */
     protected void injectDeleteByEWSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
     	ExtraSqlMethod sqlMethod = ExtraSqlMethod.DELETE_BY_EW;

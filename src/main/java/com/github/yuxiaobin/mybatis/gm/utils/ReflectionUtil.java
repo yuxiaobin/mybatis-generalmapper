@@ -14,7 +14,6 @@ import java.util.Map;
  * </p>
  *
  * @author yuxiaobin
- * @date 2017/5/27
  */
 public class ReflectionUtil {
 
@@ -22,7 +21,7 @@ public class ReflectionUtil {
      * 获取该类的所有属性列表
      *
      * @param clazz 反射类
-     * @return
+     * @return List of Fields
      */
     public static List<Field> getFieldList(Class<?> clazz) {
         if (null == clazz) {
@@ -57,6 +56,7 @@ public class ReflectionUtil {
      *
      * @param fieldList      子类属性
      * @param superFieldList 父类属性
+     * @return List of Fields
      */
     public static List<Field> excludeOverrideSuperField(List<Field> fieldList, List<Field> superFieldList) {
         // 子类属性

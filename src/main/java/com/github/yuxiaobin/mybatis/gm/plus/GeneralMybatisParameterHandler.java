@@ -86,7 +86,7 @@ public class GeneralMybatisParameterHandler extends DefaultParameterHandler {
 	 * 
 	 * @param parameter
 	 *            插入数据库对象
-	 * @return
+	 * @return Collection
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected static Collection<Object> getParameters(Object parameter) {
@@ -111,8 +111,8 @@ public class GeneralMybatisParameterHandler extends DefaultParameterHandler {
 	 * 填充主键 ID
 	 * </p>
 	 * 
-	 * @param tableInfo
-	 * @param ms
+	 * @param tableInfo Table Info
+	 * @param ms MappedStatement
 	 * @param parameterObject
 	 *            插入数据库对象
 	 * @return
