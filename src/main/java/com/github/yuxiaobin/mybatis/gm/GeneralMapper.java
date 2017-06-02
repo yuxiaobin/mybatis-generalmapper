@@ -139,7 +139,7 @@ public class GeneralMapper{
 	 * @param entityWrapper
 	 *            条件封装(必须setEntity)
 	 * @return int
-	 * 
+	 * 				effect rows
 	 * @since 1.4
 	 */
 	public int deleteByEW(GeneralEntityWrapper<?> entityWrapper) {
@@ -170,7 +170,8 @@ public class GeneralMapper{
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @return int
+	 * @return int effect rows
+	 *
 	 */
 	public int deleteSelective(Object entity) {
 		return sqlSessionTemplate.delete(getSqlStatement(SqlMethod.DELETE_SELECTIVE.getMethod(), entity.getClass()),
@@ -186,7 +187,7 @@ public class GeneralMapper{
 	 *            主键ID列表
 	 * @param clazz
 	 *            对象类型
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int deleteBatchIds(List<?> idList, Class<?> clazz) {
 		return sqlSessionTemplate.delete(getSqlStatement(SqlMethod.DELETE_BATCH.getMethod(), clazz), idList);
@@ -199,7 +200,7 @@ public class GeneralMapper{
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int updateById(Object entity) {
 		return sqlSessionTemplate.update(getSqlStatement(SqlMethod.UPDATE_BY_ID.getMethod(), entity.getClass()),
@@ -213,7 +214,7 @@ public class GeneralMapper{
 	 *
 	 * @param entity
 	 *            实体对象
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int updateSelectiveById(Object entity) {
 		return sqlSessionTemplate.update(
@@ -230,7 +231,7 @@ public class GeneralMapper{
 	 *            实体对象
 	 * @param whereEntity
 	 *            实体查询条件（可以为 null）
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int update(Object entity, Object whereEntity) {
 		Map<String, Object> objectMap = asParam("et", entity);
@@ -248,7 +249,7 @@ public class GeneralMapper{
 	 *            实体对象
 	 * @param whereEntity（可以为
 	 *            null） 实体查询条件
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int updateSelective(Object entity, Object whereEntity) {
 		Map<String, Object> objectMap = asParam("et", entity);
@@ -264,7 +265,7 @@ public class GeneralMapper{
 	 *
 	 * @param entityList
 	 *            实体对象列表
-	 * @return int
+	 * @return int effect rows
 	 */
 	public int updateBatchById(List<?> entityList) {
 		String sql = null;
@@ -291,7 +292,7 @@ public class GeneralMapper{
 	 *            主键ID
 	 * @param clazz
 	 *            对象类型
-	 * @return T
+	 * @return T 对象类型
 	 */
 	public <T> T selectById(Object id, Class<T> clazz) {
 		T result = sqlSessionTemplate.selectOne(getSqlStatement(SqlMethod.SELECT_BY_ID.getMethod(), clazz), id);
@@ -309,7 +310,7 @@ public class GeneralMapper{
 	 *            主键ID列表
 	 * @param clazz
 	 *            对象类型
-	 * @return List
+	 * @return List 对象
 	 */
 	public <T> List<T> selectBatchIds(List<?> idList, Class<T> clazz) {
 		List<T> list = sqlSessionTemplate.selectList(getSqlStatement(SqlMethod.SELECT_BATCH.getMethod(), clazz), idList);

@@ -101,7 +101,6 @@ public class GeneralEntityWrapper<T> extends EntityWrapper<T>{
 	 * Get corresponding class and check property values NOT null.
 	 * 
 	 * @since 1.6
-	 * @return
 	 */
 	public boolean checkFieldValueNotNull(){
 		Class<?> realEntityClazz = GeneralEntitySubTypesHolder.get(entity.getClass());

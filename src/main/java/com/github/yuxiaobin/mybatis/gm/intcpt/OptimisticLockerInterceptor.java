@@ -51,7 +51,7 @@ import com.github.yuxiaobin.mybatis.gm.utils.ReflectionUtil;
  * </p>
  *
  * @author yuxiaobin
- * @date 2017/5/24
+ * @since 1.8.6
  */
 @Intercepts({
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})})
@@ -112,7 +112,7 @@ public class OptimisticLockerInterceptor implements Interceptor {
      * This method provides the control for version value.<BR>
      * Returned value type must be the same as original one.
      *
-     * @param originalVersionVal
+     * @param originalVersionVal original version value
      * @return updated version val
      */
     protected Object getUpdatedVersionVal(Object originalVersionVal) {
