@@ -43,6 +43,7 @@ public class GMConfig {
 		sqlSessionFactory.setTypeAliasesPackage("com.github.yuxiaobin.mybatis.gm.test.entity.persistent");
 		MybatisConfiguration configuration = new MybatisConfiguration();
 		configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
+
 		configuration.setJdbcTypeForNull(JdbcType.NULL);
 		configuration.setMapUnderscoreToCamelCase(true);
 		sqlSessionFactory.setConfiguration(configuration);

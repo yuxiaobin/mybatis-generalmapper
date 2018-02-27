@@ -49,6 +49,7 @@ What you need is:
 * v_1.8.4: Add oracle/mysql keywords properties support: define keywords.properties in classpath(refer to src/test/resources/keywords.properties).
 * v_1.8.5: Bug fixing for batchUpdatebyIds
 * v_1.8.6: Add Optimistic Lock Support.(refer to test\java\...\test.OptLockerIntegerVersionTest)
+* v_1.8.7: Bug fixing for some cases that causes multiple typeAliasesPackage won't be registered. Refer to GeneralConfiguration.
 
 #Roadmap
 * support entityWrapper can shield the column names. 
@@ -120,7 +121,7 @@ What you need is:
 		if(StringUtils.hasText(this.properties.getConfigLocation())) {
 			 sqlSessionFactory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
 		}
-		MybatisConfiguration configuration = new MybatisConfiguration();
+		GeneralConfiguration configuration = new GeneralConfiguration();
 		configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
 		configuration.setJdbcTypeForNull(JdbcType.NULL);
 		org.apache.ibatis.session.Configuration config = properties.getConfiguration();
