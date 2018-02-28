@@ -10,18 +10,17 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.baomidou.mybatisplus.MybatisConfiguration;
+import com.github.yuxiaobin.mybatis.gm.GeneralConfiguration;
 import com.github.yuxiaobin.mybatis.gm.GeneralMapper;
 import com.github.yuxiaobin.mybatis.gm.GeneralSqlSessionFactoryBean;
+import com.github.yuxiaobin.mybatis.gm.conf.DBKeywordsConfig;
 import com.github.yuxiaobin.mybatis.gm.conf.GeneralMapperBootstrapConfiguration;
 import com.github.yuxiaobin.mybatis.gm.intcpt.GeneralPaginationInterceptor;
 import com.github.yuxiaobin.mybatis.gm.intcpt.OptimisticLockerInterceptor;
 import com.github.yuxiaobin.mybatis.gm.plus.GeneralMybatisXMLLanguageDriver;
 
 /**
- * 
  * @author yuxiaobin
- *
  */
 @Configuration
 @ComponentScan({"com.github.yuxiaobin.mybatis.gm.test.service"})
@@ -29,27 +28,28 @@ import com.github.yuxiaobin.mybatis.gm.plus.GeneralMybatisXMLLanguageDriver;
 @Import({GeneralMapperBootstrapConfiguration.class})
 public class GMConfigWithOptLocker {
 
-	@Bean
-	public GeneralSqlSessionFactoryBean sqlSessionFactory (DataSource dataSource){
-		GeneralSqlSessionFactoryBean sqlSessionFactory = new GeneralSqlSessionFactoryBean();
-		sqlSessionFactory.setDataSource(dataSource);
-		sqlSessionFactory.setTypeAliasesPackage("com.github.yuxiaobin.mybatis.gm.test.entity.persistent");
-		MybatisConfiguration configuration = new MybatisConfiguration();
-		configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
-		configuration.setJdbcTypeForNull(JdbcType.NULL);
-		configuration.setMapUnderscoreToCamelCase(true);
-		sqlSessionFactory.setConfiguration(configuration);
-		sqlSessionFactory.setPlugins(new Interceptor[]{
-				new GeneralPaginationInterceptor(null),
-				new OptimisticLockerInterceptor()
-		});
-		return sqlSessionFactory;
-	}
-	
-	@Bean
-	public GeneralMapper generalMapper(GeneralSqlSessionFactoryBean factoryBean) throws Exception{
-		GeneralMapper generalMapper = new GeneralMapper();
-		generalMapper.setSqlSessionFactory(factoryBean.getObject());
-		return generalMapper;
-	}
+    @Bean
+    public GeneralSqlSessionFactoryBean sqlSessionFactory(DataSource dataSource, DBKeywordsConfig.DBKeywords dbKeywords) {
+        GeneralSqlSessionFactoryBean sqlSessionFactory = new GeneralSqlSessionFactoryBean();
+        sqlSessionFactory.setDataSource(dataSource);
+        sqlSessionFactory.setDbKeywords(dbKeywords);
+        sqlSessionFactory.setTypeAliasesPackage("com.github.yuxiaobin.mybatis.gm.test.entity.persistent");
+        GeneralConfiguration configuration = new GeneralConfiguration();
+        configuration.setDefaultScriptingLanguage(GeneralMybatisXMLLanguageDriver.class);
+        configuration.setJdbcTypeForNull(JdbcType.NULL);
+        configuration.setMapUnderscoreToCamelCase(true);
+        sqlSessionFactory.setConfiguration(configuration);
+        sqlSessionFactory.setPlugins(new Interceptor[]{
+                new GeneralPaginationInterceptor(null),
+                new OptimisticLockerInterceptor()
+        });
+        return sqlSessionFactory;
+    }
+
+    @Bean
+    public GeneralMapper generalMapper(GeneralSqlSessionFactoryBean factoryBean) throws Exception {
+        GeneralMapper generalMapper = new GeneralMapper();
+        generalMapper.setSqlSessionFactory(factoryBean.getObject());
+        return generalMapper;
+    }
 }

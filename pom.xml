@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.yuxiaobin</groupId>
 	<artifactId>mybatis-generalmapper</artifactId>
-	<version>1.8.7</version>
+	<version>1.8.7-beta</version>
 	<name>mybatis-generalmapper</name>
 	<description>A middle-ware for mybatis plus, you can use it to CRUD single table without any sql.</description>
 	<url>https://github.com/yuxiaobin/mybatis-generalmapper</url>

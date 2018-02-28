@@ -1,5 +1,6 @@
 package com.github.yuxiaobin.mybatis.gm.mapper;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -20,18 +21,21 @@ import com.baomidou.mybatisplus.toolkit.TableInfoHelper;
 
 /**
  * Single Table CURD SQL Injector
- * 
- * @see com.baomidou.mybatisplus.mapper.AutoSqlInjector
+ *
+ * NOTE:
+ *   Dynamic data source for different types won't support batch methods
+ *
  * @author Kelly Lake(179634696@qq.com)
+ * @see com.baomidou.mybatisplus.mapper.AutoSqlInjector
  */
 public class GeneralMapperSqlInjector extends AutoSqlInjector {
-	
-	protected static final Logger logger = Logger.getLogger("GeneralMapperSqlInjector");
-	
-	private final Set<String> keywords = new HashSet<>();
-	
-	private String keyWordWrapper = null;
-	
+
+    protected static final Logger logger = Logger.getLogger("GeneralMapperSqlInjector");
+
+    private final Set<String> keywords = new HashSet<>();
+
+    private String keyWordWrapper = null;
+
     /**
      * CRUD sql inject
      */
@@ -48,8 +52,8 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
          * System class/third part class(apache,spring,hibernate), inject ignore
          * @Since 1.7
          */
-        if(modelClassName.startsWith("java") || modelClassName.matches(pattern)){
-        	return;
+        if (modelClassName.startsWith("java") || modelClassName.matches(pattern)) {
+            return;
         }
         table = TableInfoHelper.initTableInfo(modelClass);
         /**
@@ -59,7 +63,7 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
          * NOTE: if middle table don't have PK, can set one property {@code @TableId}, 
          * 		then CRUD SQL can also be injected, but **ById() method will not work properly.
          */
-        if (table!=null && table.getKeyProperty() != null) {
+        if (table != null && table.getKeyProperty() != null) {
             /* 插入 Insert SQL */
             this.injectInsertOneSql(false, mapperClass, modelClass, table);
             this.injectInsertOneSql(true, mapperClass, modelClass, table);
@@ -69,14 +73,14 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
             this.injectDeleteByMapSql(mapperClass, table);
             this.injectDeleteSql(false, mapperClass, modelClass, table);
             this.injectDeleteSql(true, mapperClass, modelClass, table);
-            this.injectDeleteByEWSql(mapperClass, modelClass,  table);
+            this.injectDeleteByEWSql(mapperClass, modelClass, table);
             /* 修改  Update SQL*/
             this.injectUpdateByIdSql(false, mapperClass, modelClass, table);
             this.injectUpdateByIdSql(true, mapperClass, modelClass, table);
             this.injectUpdateSql(false, mapperClass, modelClass, table);
             this.injectUpdateSql(true, mapperClass, modelClass, table);
             this.injectUpdateBatchById(mapperClass, modelClass, table);
-			/* 查询  Select SQL*/
+            /* 查询  Select SQL*/
             this.injectSelectSql(false, mapperClass, modelClass, table);
             this.injectSelectSql(true, mapperClass, modelClass, table);
             this.injectSelectByMapSql(mapperClass, modelClass, table);
@@ -87,160 +91,161 @@ public class GeneralMapperSqlInjector extends AutoSqlInjector {
             this.injectSelectListSql(SqlMethod.SELECT_PAGE, mapperClass, modelClass, table);
         } else {
             logger.warning(String.format("%s ,Not found @TableId annotation, cannot use mybatis-plus curd method.",
-					modelClass.toString()));
+                    modelClass.toString()));
         }
     }
-    
+
     /**
      * 删除满足条件的记录<BR>
      * Delete by EntityWrapper<BR>
-     * 
+     * <p>
      * 条件：EntityWrapper<BR>
-     * 
+     *
      * @param mapperClass mapper class
-     * @param modelClass model class
-     * @param table table info
+     * @param modelClass  model class
+     * @param table       table info
      */
     protected void injectDeleteByEWSql(Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-    	ExtraSqlMethod sqlMethod = ExtraSqlMethod.DELETE_BY_EW;
-		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhereEntityWrapper(table));
-		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, Map.class);
-		this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
-	}
-
-	protected void injectUpdateByIdSql(boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
-		ExtraSqlMethod sqlMethod = ExtraSqlMethod.GM_UPDATE_BY_ID;
-		if (selective) {
-			sqlMethod = ExtraSqlMethod.GM_UPDATE_SELECTIVE_BY_ID;
-		}
-		String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlSet(selective, table), table.getKeyColumn(),
-				table.getKeyProperty(),
-				"<if test=\"MP_OPTLOCK_VERSION_ORIGINAL!=null\">"
-					+ "and ${MP_OPTLOCK_VERSION_COLUMN}=#{MP_OPTLOCK_VERSION_ORIGINAL}"
-				+ "</if>");
-		SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
-		this.addUpdateMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource);
-	}
-    
-    //TODO:现在insertBatch只支持一种数据库，如果动态切，会出错！！！2017-3-15
-    
-    public enum ExtraSqlMethod{
-    	
-    	DELETE_BY_EW("deleteByEw", "删除满足条件的记录", "<script>DELETE FROM %s %s</script>"),
-		GM_UPDATE_BY_ID("updateById", "根据ID 修改数据", "<script>UPDATE %s %s WHERE %s=#{et.%s} %s</script>"),
-		GM_UPDATE_SELECTIVE_BY_ID("updateSelectiveById", "根据ID 选择修改数据", "<script>UPDATE %s %s WHERE %s=#{et.%s} %s</script>"),;
-    	
-    	private final String method;
-    	
-    	private final String desc;
-
-    	private final String sql;
-
-    	ExtraSqlMethod( final String method, final String desc, final String sql ) {
-    		this.method = method;
-    		this.desc = desc;
-    		this.sql = sql;
-    	}
-		public String getMethod() {
-			return method;
-		}
-		public String getDesc() {
-			return desc;
-		}
-		public String getSql() {
-			return sql;
-		}
-    	
+        ExtraSqlMethod sqlMethod = ExtraSqlMethod.DELETE_BY_EW;
+        String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlWhereEntityWrapper(table));
+        SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, Map.class);
+        this.addDeleteMappedStatement(mapperClass, sqlMethod.getMethod(), sqlSource);
     }
 
-	@Override
-	protected String sqlSelectColumns(TableInfo table, boolean entityWrapper) {
-		StringBuilder columns = new StringBuilder();
-		if (null != table.getResultMap()) {
-			/*
-			 * 存在 resultMap 映射返回
-			 */
-			if (entityWrapper) {
-				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
-			}
-			columns.append("*");
-			if (entityWrapper) {
-				columns.append("</otherwise></choose>");
-			}
-		} else {
-			/*
-			 * 普通查询
-			 */
-			if (entityWrapper) {
-				columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
-			}
-			if (table.isKeyRelated()) {
-				columns.append(table.getKeyColumn()).append(" AS ").append(convertKeyWords4Property(table.getKeyProperty()));
-			} else {
-				columns.append(convertKeyWords4Property(table.getKeyProperty()));
-			}
-			List<TableFieldInfo> fieldList = table.getFieldList();
-			for (TableFieldInfo fieldInfo : fieldList) {
-				columns.append(",").append(fieldInfo.getColumn());
-				if (fieldInfo.isRelated()) {
-					columns.append(" AS ").append(convertKeyWords4Property(fieldInfo.getProperty()));
-				}
-			}
-			if (entityWrapper) {
-				columns.append("</otherwise></choose>");
-			}
-		}
+    protected void injectUpdateByIdSql(boolean selective, Class<?> mapperClass, Class<?> modelClass, TableInfo table) {
+        ExtraSqlMethod sqlMethod = ExtraSqlMethod.GM_UPDATE_BY_ID;
+        if (selective) {
+            sqlMethod = ExtraSqlMethod.GM_UPDATE_SELECTIVE_BY_ID;
+        }
+        String sql = String.format(sqlMethod.getSql(), table.getTableName(), sqlSet(selective, table), table.getKeyColumn(),
+                table.getKeyProperty(),
+                "<if test=\"MP_OPTLOCK_VERSION_ORIGINAL!=null\">"
+                        + "and ${MP_OPTLOCK_VERSION_COLUMN}=#{MP_OPTLOCK_VERSION_ORIGINAL}"
+                        + "</if>");
+        SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
+        this.addUpdateMappedStatement(mapperClass, modelClass, sqlMethod.getMethod(), sqlSource);
+    }
 
-		/*
-		 * 返回所有查询字段内容
-		 */
-		return columns.toString();
-	}
-    
-	public String convertKeyWords4Property(String property){
-		if(keywords.contains(property.toUpperCase())){
-			return keyWordWrapper + property+keyWordWrapper;
-		}else{
-			return property;
-		}
-	}
-	
-	public void addKeyWords(Collection<String> words){
-		keywords.addAll(words);
-	}
-    
-	public void addKeyWord(String... words){
-		if(words!=null && words.length!=0){
-			for(String s:words){
-				keywords.add(s);
-			}
-		}
-	}
-    
-	public void setDBType(DBType dbType){
-		this.dbType = dbType;
-		switch (this.dbType) {
-		case MYSQL:
-			keyWordWrapper = "'";
-			keywords.add("ASC");
-			keywords.add("DESC");
-			break;
-		case ORACLE:
-			keyWordWrapper = "\"";
-			keywords.add("ASC");
-			keywords.add("AS");
-			keywords.add("CHAR");
-			keywords.add("COLUMN");
-			keywords.add("COMMENT");
-			keywords.add("DATE");
-			keywords.add("DECIMAL");
-			keywords.add("DELETE");
-			keywords.add("DESC");
-			keywords.add("FOR");
-			keywords.add("GROUP");
-			keywords.add("LEVEL");
-			keywords.add("SIZE");
-			break;
-		}
-	}
+    //TODO:现在insertBatch只支持一种数据库，如果动态切，会出错！！！2017-3-15
+
+    public enum ExtraSqlMethod {
+
+        DELETE_BY_EW("deleteByEw", "删除满足条件的记录", "<script>DELETE FROM %s %s</script>"),
+        GM_UPDATE_BY_ID("updateById", "根据ID 修改数据", "<script>UPDATE %s %s WHERE %s=#{et.%s} %s</script>"),
+        GM_UPDATE_SELECTIVE_BY_ID("updateSelectiveById", "根据ID 选择修改数据", "<script>UPDATE %s %s WHERE %s=#{et.%s} %s</script>"),;
+
+        private final String method;
+
+        private final String desc;
+
+        private final String sql;
+
+        ExtraSqlMethod(final String method, final String desc, final String sql) {
+            this.method = method;
+            this.desc = desc;
+            this.sql = sql;
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public String getSql() {
+            return sql;
+        }
+
+    }
+
+    @Override
+    protected String sqlSelectColumns(TableInfo table, boolean entityWrapper) {
+        StringBuilder columns = new StringBuilder();
+        if (null != table.getResultMap()) {
+            /*
+             * 存在 resultMap 映射返回
+             */
+            if (entityWrapper) {
+                columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
+            }
+            columns.append("*");
+            if (entityWrapper) {
+                columns.append("</otherwise></choose>");
+            }
+        } else {
+            /*
+             * 普通查询
+             */
+            if (entityWrapper) {
+                columns.append("<choose><when test=\"ew != null and ew.sqlSelect != null\">${ew.sqlSelect}</when><otherwise>");
+            }
+            if (table.isKeyRelated()) {
+                columns.append(table.getKeyColumn()).append(" AS ").append(convertKeyWords4Property(table.getKeyProperty()));
+            } else {
+                columns.append(convertKeyWords4Property(table.getKeyProperty()));
+            }
+            List<TableFieldInfo> fieldList = table.getFieldList();
+            for (TableFieldInfo fieldInfo : fieldList) {
+                columns.append(",").append(fieldInfo.getColumn());
+                if (fieldInfo.isRelated()) {
+                    columns.append(" AS ").append(convertKeyWords4Property(fieldInfo.getProperty()));
+                }
+            }
+            if (entityWrapper) {
+                columns.append("</otherwise></choose>");
+            }
+        }
+
+        /*
+         * 返回所有查询字段内容
+         */
+        return columns.toString();
+    }
+
+    public String convertKeyWords4Property(String property) {
+        if (keywords.contains(property.toUpperCase())) {
+            return keyWordWrapper + property + keyWordWrapper;
+        } else {
+            return property;
+        }
+    }
+
+    public void addKeyWords(Collection<String> words) {
+        keywords.addAll(words);
+    }
+
+    public void addKeyWord(String... words) {
+        if (words != null && words.length != 0) {
+            keywords.addAll(Arrays.asList(words));
+        }
+    }
+
+    public void setDBType(DBType dbType) {
+        this.dbType = dbType;
+        switch (this.dbType) {
+            case MYSQL:
+                keyWordWrapper = "'";
+                keywords.add("ASC");
+                keywords.add("DESC");
+                break;
+            case ORACLE:
+                keyWordWrapper = "\"";
+                keywords.add("ASC");
+                keywords.add("AS");
+                keywords.add("CHAR");
+                keywords.add("COLUMN");
+                keywords.add("COMMENT");
+                keywords.add("DATE");
+                keywords.add("DECIMAL");
+                keywords.add("DELETE");
+                keywords.add("DESC");
+                keywords.add("FOR");
+                keywords.add("GROUP");
+                keywords.add("LEVEL");
+                keywords.add("SIZE");
+                break;
+        }
+    }
 }
