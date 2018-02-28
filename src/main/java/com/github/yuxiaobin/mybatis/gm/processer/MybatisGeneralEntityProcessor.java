@@ -22,7 +22,7 @@ import com.github.yuxiaobin.mybatis.gm.plus.GeneralEntitySubTypesHolder;
  * <p>
  * V1.8: scan sub-entities for entity, which is used for supporting query by subtypes.
  * V1.8.7-beta: only used to scan sub-entities. Move sql inject to {@link com.github.yuxiaobin.mybatis.gm.GeneralSqlSessionFactoryBean}
- * for some special cases(spring boot), bean init order issue which will cause invoke generalMapper failed in {@code javax.annotation..PostConstruct}
+ * for some special cases(spring boot), bean init order issue which will cause invoke generalMapper failed in {@code javax.annotation.PostConstruct}
  *
  * @author Kelly Lake(179634696@qq.com)
  */

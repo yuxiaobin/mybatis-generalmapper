@@ -50,6 +50,7 @@ What you need is:
 * v_1.8.5: Bug fixing for batchUpdatebyIds
 * v_1.8.6: Add Optimistic Lock Support.(refer to test\java\...\test.OptLockerIntegerVersionTest)
 * v_1.8.7: Bug fixing for some cases that causes multiple typeAliasesPackage won't be registered. Refer to GeneralConfiguration.
+* v_1.8.7-beta: Adjust sql inject time earlier: move to GeneralSqlSessionFactoryBean.getObject(), to avoid some special cases(spring boot with some FactoryBean) which causes @PostConstruct not work properly.
 
 #Roadmap
 * support entityWrapper can shield the column names. 
