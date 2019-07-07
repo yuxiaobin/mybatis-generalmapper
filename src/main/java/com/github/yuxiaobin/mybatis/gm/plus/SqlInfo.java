@@ -21,7 +21,6 @@ package com.github.yuxiaobin.mybatis.gm.plus;
  * </p>
  *
  * @author hubin
- * @Date 2017-06-20
  */
 public class SqlInfo {
 

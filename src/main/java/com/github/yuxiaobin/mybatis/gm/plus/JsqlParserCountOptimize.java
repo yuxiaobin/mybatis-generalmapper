@@ -43,7 +43,6 @@ import net.sf.jsqlparser.statement.select.SelectItem;
  * </p>
  *
  * @author hubin
- * @since 2017-06-20
  */
 public class JsqlParserCountOptimize implements ISqlParser {
 

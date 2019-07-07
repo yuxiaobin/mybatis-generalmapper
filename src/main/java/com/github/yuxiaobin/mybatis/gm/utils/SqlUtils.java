@@ -26,11 +26,10 @@ import com.github.yuxiaobin.mybatis.gm.plus.SqlInfo;
 
 /**
  * <p>
- * SqlUtils工具类
+ * SqlUtils工具类, COPY from mp v2.x
  * </p>
  *
  * @author Caratacus
- * @Date 2016-11-13
  */
 public class SqlUtils {
 
@@ -44,7 +43,7 @@ public class SqlUtils {
      * </p>
      *
      * @param originalSql
-     * @return
+     * @return original count sql
      */
     public static String getOriginalCountSql(String originalSql) {
         return String.format("SELECT COUNT(1) FROM ( %s ) TOTAL", originalSql);
@@ -88,7 +87,7 @@ public class SqlUtils {
      * @param originalSql 需要拼接的SQL
      * @param page        page对象
      * @param orderBy     是否需要拼接Order By
-     * @return
+     * @return orderBy sql
      */
     public static String concatOrderBy(String originalSql, Pagination page, boolean orderBy) {
         if (orderBy && StringUtils.isNotEmpty(page.getOrderByField())) {
@@ -127,7 +126,7 @@ public class SqlUtils {
      *
      * @param boundSql
      * @param format
-     * @return
+     * @return formatted sql
      */
     public static String sqlFormat(String boundSql, boolean format) {
         if (format) {
