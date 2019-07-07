@@ -406,7 +406,7 @@ public class GeneralMapper{
 	 * @return List
 	 */
 	public <T> List<T> selectPage(Pagination page, GeneralEntityWrapper<T> entityWrapper) {
-		page.setSearchCount(false);//page.searchCount=true by default, which will cause PaginationInterceptor searchCount again. actually no need to do the query
+//		page.setSearchCount(false);//v1.8.8: page.searchCount=true by default, which will cause PaginationInterceptor searchCount again. actually no need to do the query
 		List<T> list = sqlSessionTemplate.selectList(
 				getSqlStatement(SqlMethod.SELECT_PAGE.getMethod(), entityWrapper.getEntity().getClass()),
 				asParam("ew", entityWrapper), page);

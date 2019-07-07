@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.github.yuxiaobin.mybatis.gm.test.entity.persistent.User;
 
 public interface UserMapper {
@@ -21,5 +22,8 @@ public interface UserMapper {
 	public List<User> selectUsers();
 
 	public List<User> selectListRow();
+
+	@Select("select * from user")
+	public List<User> selectMyPage(Page page);
 
 }
